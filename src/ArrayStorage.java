@@ -8,6 +8,12 @@ public class ArrayStorage {
     private int resumeCnt = 0;
 
     void clear() {
+        // maybe, it is not necessary to null the resume links
+        for (int i = 0; i < resumeCnt; i++) {
+            storage[i] = null;
+        }
+
+        resumeCnt = 0;
     }
 
     void save(Resume r) {
@@ -36,7 +42,7 @@ public class ArrayStorage {
     }
 
     int size() {
-        return 0;
+        return resumeCnt;
     }
 
     private int getStorageIndex(String uuid) {
