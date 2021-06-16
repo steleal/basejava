@@ -18,6 +18,10 @@ public class ArrayStorage {
     }
 
     Resume get(String uuid) {
+        int i = getStorageIndex(uuid);
+        if (i > -1) {
+            return storage[i];
+        }
         return null;
     }
 
@@ -34,4 +38,15 @@ public class ArrayStorage {
     int size() {
         return 0;
     }
+
+    private int getStorageIndex(String uuid) {
+        for (int i = 0; i < resumeCnt; i++) {
+            Resume resume = storage[i];
+            if (resume.uuid.equals(uuid)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 }
