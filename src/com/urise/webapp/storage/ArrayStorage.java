@@ -30,8 +30,14 @@ public class ArrayStorage {
     }
 
     public void save(Resume r) {
-        // TODO check if resume not present
-        storage[size++] = r;
+        int index = indexOf(r.getUuid());
+        if (index >= 0) {
+            System.out.printf("ERROR in save(): resume %s already exists in the storage.%n", r);
+        } else if (size == STORAGE_SIZE) {
+            System.out.printf("ERROR in save(): can not save resume %s, the storage is full.%n", r);
+        } else {
+            storage[size++] = r;
+        }
     }
 
     /**
