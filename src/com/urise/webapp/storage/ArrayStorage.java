@@ -11,26 +11,25 @@ public class ArrayStorage {
     private final static int STORAGE_SIZE = 10000;
 
     private Resume[] storage = new Resume[STORAGE_SIZE];
-    private int resumeCnt = 0;
+    private int size = 0;
 
     public void clear() {
-        // maybe, it is not necessary to null the resume links
-        for (int i = 0; i < resumeCnt; i++) {
+        for (int i = 0; i < size; i++) {
             storage[i] = null;
         }
-
-        resumeCnt = 0;
+        size = 0;
     }
 
+    public void update(Resume r) {
+        // TODO check if resume present, then sout ERROR:
+    }
 
     /**
      * @throws RuntimeException if number of resumes will be more than the storage size.
      */
     public void save(Resume r) {
-        if (resumeCnt == STORAGE_SIZE) {
-            throw new RuntimeException(String.format("Can not save resume %s: storage is full.", r));
-        }
-        storage[resumeCnt++] = r;
+        // TODO check if resume not present
+        storage[size++] = r;
     }
 
     /**
@@ -42,31 +41,31 @@ public class ArrayStorage {
     }
 
     public void delete(String uuid) {
+        // TODO check if resume present
         int delIndex = indexOf(uuid);
         if (delIndex < 0) {
             return;
         }
 
-        //move all resumes after deleting one step to the left and clear last element
-        int srcIndex = delIndex + 1;
-        int length = resumeCnt - srcIndex;
-        System.arraycopy(storage, srcIndex, storage, delIndex, length);
-        storage[--resumeCnt] = null;
+        //order of elements is not important, move only last element
+        int lastIndex = --size;
+        storage[delIndex] = storage[lastIndex];
+        storage[lastIndex] = null;
     }
 
     /**
      * @return array, contains only Resumes in storage (without null)
      */
     public Resume[] getAll() {
-        return Arrays.copyOf(storage, resumeCnt);
+        return Arrays.copyOf(storage, size);
     }
 
     public int size() {
-        return resumeCnt;
+        return size;
     }
 
     private int indexOf(String uuid) {
-        for (int i = 0; i < resumeCnt; i++) {
+        for (int i = 0; i < size; i++) {
             Resume resume = storage[i];
             if (resume.getUuid().equals(uuid)) {
                 return i;
