@@ -21,7 +21,12 @@ public class ArrayStorage {
     }
 
     public void update(Resume r) {
-        // TODO check if resume present, then sout ERROR:
+        int index = indexOf(r.getUuid());
+        if (index <0) {
+            System.out.printf("ERROR in update(): resume %s is not found in the storage.%n", r);
+        } else {
+            storage[index] = r;
+        }
     }
 
     /**
