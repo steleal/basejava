@@ -23,7 +23,9 @@ public class ArrayStorage {
      * @throws RuntimeException if number of resumes will be more than the storage size.
      */
     void save(Resume r) {
-        throwExceptionIfStorageFull(String.format("Can not save resume %s: storage is full.", r));
+        if (resumeCnt == STORAGE_SIZE) {
+            throw new RuntimeException(String.format("Can not save resume %s: storage is full.", r));
+        }
         storage[resumeCnt++] = r;
     }
 
@@ -31,11 +33,8 @@ public class ArrayStorage {
      * @return {@link Resume} or null, if uuid not found.
      */
     Resume get(String uuid) {
-        int i = indexOf(uuid);
-        if (i < 0) {
-            return null;
-        }
-        return storage[i];
+        int index = indexOf(uuid);
+        return index < 0 ? null : storage[index];
     }
 
     void delete(String uuid) {
@@ -70,12 +69,6 @@ public class ArrayStorage {
             }
         }
         return -1;
-    }
-
-    private void throwExceptionIfStorageFull(String message) {
-        if (resumeCnt == STORAGE_SIZE) {
-            throw new RuntimeException(message);
-        }
     }
 
 }
