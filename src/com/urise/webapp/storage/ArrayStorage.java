@@ -21,7 +21,7 @@ public class ArrayStorage {
     public void update(Resume r) {
         int index = indexOf(r.getUuid());
         if (index < 0) {
-            System.out.printf("ERROR in update(): resume %s is not found in the storage.%n", r);
+            System.out.printf("ERROR: resume %s is not found in the storage.%n", r);
         } else {
             storage[index] = r;
         }
@@ -30,9 +30,9 @@ public class ArrayStorage {
     public void save(Resume r) {
         int index = indexOf(r.getUuid());
         if (index >= 0) {
-            System.out.printf("ERROR in save(): resume %s already exists in the storage.%n", r);
+            System.out.printf("ERROR: resume %s already exists in the storage.%n", r);
         } else if (size == STORAGE_SIZE) {
-            System.out.printf("ERROR in save(): can not save resume %s, the storage is full.%n", r);
+            System.out.printf("ERROR: can not save resume %s, the storage is full.%n", r);
         } else {
             storage[size++] = r;
         }
@@ -44,7 +44,7 @@ public class ArrayStorage {
     public Resume get(String uuid) {
         int index = indexOf(uuid);
         if (index < 0) {
-            System.out.printf("ERROR in get(): resume with uuid %s is not found in the storage.%n", uuid);
+            System.out.printf("ERROR: resume with uuid %s is not found in the storage.%n", uuid);
         }
         return index < 0 ? null : storage[index];
     }
@@ -52,7 +52,7 @@ public class ArrayStorage {
     public void delete(String uuid) {
         int index = indexOf(uuid);
         if (index < 0) {
-            System.out.printf("ERROR in delete(): resume with uuid %s is not found in the storage.%n", uuid);
+            System.out.printf("ERROR: resume with uuid %s is not found in the storage.%n", uuid);
         } else {
             //order of elements is not important, move only last element
             storage[index] = storage[--size];
