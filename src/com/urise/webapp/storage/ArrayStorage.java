@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private final static int STORAGE_SIZE = 10000;
+    private final static int STORAGE_SIZE = 10_000;
 
     private Resume[] storage = new Resume[STORAGE_SIZE];
     private int size = 0;
@@ -50,8 +50,9 @@ public class ArrayStorage {
         int index = indexOf(uuid);
         if (index < 0) {
             System.out.printf("ERROR: resume with uuid %s is not found in the storage.%n", uuid);
+            return null;
         }
-        return index < 0 ? null : storage[index];
+        return storage[index];
     }
 
     public void delete(String uuid) {
