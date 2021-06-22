@@ -9,9 +9,10 @@ import ru.javawebinar.basejava.model.Resume;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public abstract class AbstractArrayStorageTest {
-    private Storage storage;
+    private final Storage storage;
 
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
@@ -79,9 +80,14 @@ public abstract class AbstractArrayStorageTest {
 
     @Test(expected = StorageException.class)
     public void saveStorageOverflow() {
-        for (int i = 4; i < 10_002; i++) {
-            storage.save(new Resume("uuid" + i));
+        try {
+            for (int i = 4; i < 10_001; i++) {
+                storage.save(new Resume("uuid" + i));
+            }
+        } catch (StorageException e) {
+            fail("Storage overflow has happened ahead of time.");
         }
+        storage.save(new Resume("uuid10001"));
     }
 
     @Test
