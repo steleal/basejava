@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
@@ -24,31 +26,45 @@ public class ListStorage extends AbstractStorage {
         return storage.toArray(new Resume[storage.size()]);
     }
 
-    protected int getIndex(String uuid) {
+    protected Object searchKey(String uuid) {
         int size = storage.size();
         for (int i = 0; i < size; i++) {
             Resume r = storage.get(i);
             if (Objects.equals(r.getUuid(), uuid)) {
-                return i;
+                return Integer.valueOf(i);
             }
         }
-        return -1;
+        return Integer.valueOf(-1);
     }
 
-    protected Resume getElement(int index) {
-        return storage.get(index);
+    protected Resume getElement(Object key) {
+        return storage.get((int) key);
     }
 
-    protected void insertElement(Resume r, int index) {
+    protected void insertElement(Resume r, Object key) {
         storage.add(r);
     }
 
-    protected void updateElement(Resume r, int index) {
-        storage.set(index, r);
+    protected void updateElement(Resume r, Object key) {
+        storage.set((int) key, r);
     }
 
-    protected void deleteElement(int index) {
-        storage.remove(index);
+    protected void deleteElement(Object key) {
+        storage.remove((int) key);
+    }
+
+    protected void checkExist(String uuid, Object key) {
+        int index = (int) key;
+        if (index < 0) {
+            throw new NotExistStorageException(uuid);
+        }
+    }
+
+    protected void checkNotExist(String uuid, Object key) {
+        int index = (int) key;
+        if (index >= 0) {
+            throw new ExistStorageException(uuid);
+        }
     }
 
 }

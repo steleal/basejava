@@ -1,14 +1,12 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 
-// todo удалить после ревью
-//  Вот зря мы MapStorage унаследовали от AbstractStorage, надо было implements Storage.
-//  А сейчас мы решаем ненужные (т.к. мапа) проблемы по работе с индексом :-(
 public class MapStorage extends AbstractStorage {
     private Map<String, Resume> storage = new TreeMap<>();
 
@@ -29,36 +27,45 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected int getIndex(String uuid) {
-        Object[] uuids = storage.keySet().toArray();
-        for (int i = 0; i < uuids.length; i++) {
-            if (Objects.equals(uuid, uuids[i])) {
-                return i;
-            }
+    protected Object searchKey(String uuid) {
+        if (storage.containsKey(uuid)) {
+            return uuid;
         }
-        return -1;
+        return null;
     }
 
     @Override
-    protected Resume getElement(int index) {
-        Object[] uuids = storage.keySet().toArray();
-        return storage.get(uuids[index]);
+    protected Resume getElement(Object key) {
+        return storage.get(key);
     }
 
     @Override
-    protected void insertElement(Resume r, int index) {
+    protected void insertElement(Resume r, Object key) {
         storage.put(r.getUuid(), r);
     }
 
     @Override
-    protected void updateElement(Resume r, int index) {
-        storage.put(r.getUuid(), r);
+    protected void updateElement(Resume r, Object key) {
+        storage.put((String) key, r);
     }
 
     @Override
-    protected void deleteElement(int index) {
-        Object[] uuids = storage.keySet().toArray();
-        storage.remove(uuids[index]);
+    protected void deleteElement(Object key) {
+        storage.remove(key);
+    }
+
+    @Override
+    protected void checkExist(String uuid, Object key) {
+        if (key == null) {
+            throw new NotExistStorageException(uuid);
+        }
+    }
+
+    @Override
+    protected void checkNotExist(String uuid, Object key) {
+        if (key != null) {
+            throw new ExistStorageException(uuid);
+        }
     }
 
 }
