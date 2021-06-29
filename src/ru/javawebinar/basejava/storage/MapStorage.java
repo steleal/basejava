@@ -1,7 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Map;
@@ -28,10 +26,7 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected Object searchKey(String uuid) {
-        if (storage.containsKey(uuid)) {
-            return uuid;
-        }
-        return null;
+        return storage.containsKey(uuid) ? uuid : null;
     }
 
     @Override
@@ -52,20 +47,6 @@ public class MapStorage extends AbstractStorage {
     @Override
     protected void deleteElement(Object key) {
         storage.remove(key);
-    }
-
-    @Override
-    protected void checkExist(String uuid, Object key) {
-        if (key == null) {
-            throw new NotExistStorageException(uuid);
-        }
-    }
-
-    @Override
-    protected void checkNotExist(String uuid, Object key) {
-        if (key != null) {
-            throw new ExistStorageException(uuid);
-        }
     }
 
 }
