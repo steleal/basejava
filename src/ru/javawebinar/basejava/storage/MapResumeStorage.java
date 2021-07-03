@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class MapStorage extends AbstractStorage {
+public class MapResumeStorage extends AbstractStorage {
     private Map<String, Resume> storage = new TreeMap<>();
 
     @Override
@@ -29,27 +29,26 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected Object searchKey(String uuid) {
-        return storage.containsKey(uuid) ? uuid : null;
+        return storage.getOrDefault(uuid, null);
     }
 
     @Override
-    protected Resume getElement(Object key) {
-        return storage.get(key);
+    protected Resume getElement(Object resume) {
+        return (Resume) resume;
     }
 
     @Override
-    protected void insertElement(Resume r, Object key) {
+    protected void insertElement(Resume r, Object resume) {
         storage.put(r.getUuid(), r);
     }
 
     @Override
-    protected void updateElement(Resume r, Object key) {
-        storage.put((String) key, r);
+    protected void updateElement(Resume r, Object resume) {
+        storage.put(r.getUuid(), r);
     }
 
     @Override
-    protected void deleteElement(Object key) {
-        storage.remove(key);
+    protected void deleteElement(Object resume) {
+        storage.remove(((Resume) resume).getUuid());
     }
-
 }
