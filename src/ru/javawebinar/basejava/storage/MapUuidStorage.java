@@ -21,13 +21,6 @@ public class MapUuidStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        return storage.values().stream()
-                .sorted()
-                .collect(Collectors.toList());
-    }
-
-    @Override
     protected Object searchKey(String uuid) {
         return storage.containsKey(uuid) ? uuid : null;
     }
@@ -50,6 +43,11 @@ public class MapUuidStorage extends AbstractStorage {
     @Override
     protected void deleteElement(Object uuid) {
         storage.remove(uuid);
+    }
+
+    @Override
+    protected List<Resume> getListOfResumes() {
+        return storage.values().stream().collect(Collectors.toList());
     }
 
 }

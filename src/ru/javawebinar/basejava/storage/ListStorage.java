@@ -5,7 +5,6 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ListStorage extends AbstractStorage {
     private List<Resume> storage = new ArrayList<>();
@@ -18,13 +17,6 @@ public class ListStorage extends AbstractStorage {
     @Override
     public void clear() {
         storage.clear();
-    }
-
-    @Override
-    public List<Resume> getAllSorted() {
-        return storage.stream()
-                .sorted()
-                .collect(Collectors.toList());
     }
 
     protected Object searchKey(String uuid) {
@@ -52,6 +44,11 @@ public class ListStorage extends AbstractStorage {
 
     protected void deleteElement(Object key) {
         storage.remove((int) key);
+    }
+
+    @Override
+    protected List<Resume> getListOfResumes() {
+        return new ArrayList<>(storage);
     }
 
 }

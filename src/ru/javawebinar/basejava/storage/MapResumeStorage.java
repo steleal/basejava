@@ -21,13 +21,6 @@ public class MapResumeStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        return storage.values().stream()
-                .sorted()
-                .collect(Collectors.toList());
-    }
-
-    @Override
     protected Object searchKey(String uuid) {
         return storage.getOrDefault(uuid, null);
     }
@@ -51,4 +44,10 @@ public class MapResumeStorage extends AbstractStorage {
     protected void deleteElement(Object resume) {
         storage.remove(((Resume) resume).getUuid());
     }
+
+    @Override
+    protected List<Resume> getListOfResumes() {
+        return storage.values().stream().collect(Collectors.toList());
+    }
+
 }
