@@ -48,7 +48,7 @@ public class Resume {
 
     @Override
     public String toString() {
-        return uuid + " " + fullName;
+        return uuid + " (" + fullName + ")";
     }
 
 }
