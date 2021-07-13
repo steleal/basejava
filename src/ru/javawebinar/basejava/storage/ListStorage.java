@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ListStorage extends AbstractStorage {
+public class ListStorage extends AbstractStorage<Integer> {
     private List<Resume> storage = new ArrayList<>();
 
     @Override
@@ -19,7 +19,7 @@ public class ListStorage extends AbstractStorage {
         storage.clear();
     }
 
-    protected Object searchKey(String uuid) {
+    protected Integer searchKey(String uuid) {
         int size = storage.size();
         for (int i = 0; i < size; i++) {
             Resume r = storage.get(i);
@@ -30,19 +30,19 @@ public class ListStorage extends AbstractStorage {
         return null;
     }
 
-    protected Resume getElement(Object key) {
-        return storage.get((int) key);
+    protected Resume getElement(Integer key) {
+        return storage.get(key);
     }
 
-    protected void insertElement(Resume r, Object key) {
+    protected void insertElement(Resume r, Integer key) {
         storage.add(r);
     }
 
-    protected void updateElement(Resume r, Object key) {
-        storage.set((int) key, r);
+    protected void updateElement(Resume r, Integer key) {
+        storage.set(key, r);
     }
 
-    protected void deleteElement(Object key) {
+    protected void deleteElement(Integer key) {
         storage.remove((int) key);
     }
 

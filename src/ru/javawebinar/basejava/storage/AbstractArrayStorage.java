@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Array based storage for Resumes
  */
-public abstract class AbstractArrayStorage extends AbstractStorage {
+public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
     protected static final int STORAGE_LIMIT = 10000;
 
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
@@ -31,24 +31,24 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return Arrays.asList(Arrays.copyOfRange(storage, 0, size));
     }
 
-    protected Resume getElement(Object key) {
-        return storage[(int) key];
+    protected Resume getElement(Integer key) {
+        return storage[key];
     }
 
-    protected void insertElement(Resume r, Object key) {
+    protected void insertElement(Resume r, Integer key) {
         if (size == STORAGE_LIMIT) {
             throw new StorageException("Storage overflow", r.getUuid());
         }
-        insertResumeToStorage(r, (int) key);
+        insertResumeToStorage(r, key);
         size++;
     }
 
-    protected void updateElement(Resume r, Object key) {
-        storage[(int) key] = r;
+    protected void updateElement(Resume r, Integer key) {
+        storage[key] = r;
     }
 
-    protected void deleteElement(Object key) {
-        fillDeletedElement((int) key);
+    protected void deleteElement(Integer key) {
+        fillDeletedElement(key);
         storage[size - 1] = null;
         size--;
     }
@@ -57,15 +57,15 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     protected abstract void insertResumeToStorage(Resume r, int index);
 
-    protected void checkExist(String uuid, Object key) {
-        int index = (int) key;
+    protected void checkExist(String uuid, Integer key) {
+        int index = key;
         if (index < 0) {
             throw new NotExistStorageException(uuid);
         }
     }
 
-    protected void checkNotExist(String uuid, Object key) {
-        int index = (int) key;
+    protected void checkNotExist(String uuid, Integer key) {
+        int index = key;
         if (index >= 0) {
             throw new ExistStorageException(uuid);
         }
