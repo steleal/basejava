@@ -14,8 +14,8 @@ public class Resume {
     private final String uuid;
     private final String fullName;
 
-    Map<ContactType, String> contacts;
-    Map<SectionType, AbstractSection> sections;
+    private Map<ContactType, String> contacts;
+    private Map<SectionType, AbstractSection> sections;
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);

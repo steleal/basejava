@@ -3,14 +3,14 @@ package ru.javawebinar.basejava.model;
 import java.time.YearMonth;
 import java.util.Objects;
 
-public class Job implements Content {
+public class Position {
     private Company company;
     private YearMonth startDate;
     private YearMonth stopDate;
     private String title;
     private String description;
 
-    public Job(Company company, YearMonth startDate, YearMonth stopDate, String title, String description) {
+    public Position(Company company, YearMonth startDate, YearMonth stopDate, String title, String description) {
         this.company = company;
         this.startDate = startDate;
         this.stopDate = stopDate;
@@ -22,12 +22,12 @@ public class Job implements Content {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Job job = (Job) o;
-        return Objects.equals(company, job.company) &&
-                Objects.equals(startDate, job.startDate) &&
-                Objects.equals(stopDate, job.stopDate) &&
-                Objects.equals(title, job.title) &&
-                Objects.equals(description, job.description);
+        Position position = (Position) o;
+        return Objects.equals(company, position.company) &&
+                Objects.equals(startDate, position.startDate) &&
+                Objects.equals(stopDate, position.stopDate) &&
+                Objects.equals(title, position.title) &&
+                Objects.equals(description, position.description);
     }
 
     @Override

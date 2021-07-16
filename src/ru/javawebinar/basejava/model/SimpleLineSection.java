@@ -2,7 +2,7 @@ package ru.javawebinar.basejava.model;
 
 import java.util.Objects;
 
-public class SimpleLineSection<C extends Content> extends AbstractSection {
+public class SimpleLineSection<C> extends AbstractSection {
     private C item;
 
     public SimpleLineSection(C item) {
