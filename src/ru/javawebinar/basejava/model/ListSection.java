@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ListSection<C> extends AbstractSection {
-    private List<C> items;
+public class ListSection extends AbstractSection {
+    private final List<String> items;
 
-    public ListSection(List<C> items) {
+    public ListSection(List<String> items) {
+        Objects.requireNonNull(items, "items must be not null");
         this.items = items;
     }
 
@@ -15,8 +16,8 @@ public class ListSection<C> extends AbstractSection {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ListSection<?> that = (ListSection<?>) o;
-        return Objects.equals(items, that.items);
+        ListSection that = (ListSection) o;
+        return items.equals(that.items);
     }
 
     @Override
@@ -29,12 +30,8 @@ public class ListSection<C> extends AbstractSection {
         return items.stream().map(Object::toString).collect(Collectors.joining("\n"));
     }
 
-    public List<C> getItems() {
+    public List<String> getItems() {
         return items;
-    }
-
-    public void setItems(List<C> items) {
-        this.items = items;
     }
 
 }

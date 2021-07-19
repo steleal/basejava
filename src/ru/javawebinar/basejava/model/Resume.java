@@ -22,6 +22,8 @@ public class Resume {
     }
 
     public Resume(String uuid, String fullName) {
+        Objects.requireNonNull(uuid, "uuid must not be null");
+        Objects.requireNonNull(fullName, "fullName must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
         this.contacts = new EnumMap<>(ContactType.class);
@@ -53,7 +55,7 @@ public class Resume {
         for (ContactType contactType : ContactType.values()) {
             String contact = contacts.getOrDefault(contactType, null);
             if (contact == null) continue;
-            builder.append(String.format("%s: %s%n", contactType.getDescription(), contact));
+            builder.append(String.format("%s: %s%n", contactType.getTitle(), contact));
         }
         builder.append("\n");
 
@@ -74,19 +76,19 @@ public class Resume {
         return fullName;
     }
 
-    public Map<ContactType, String> getContacts() {
-        return contacts;
+    public AbstractSection getSection(SectionType type) {
+        return sections.get(type);
     }
 
     public String getContact(ContactType type) {
         return contacts.get(type);
     }
 
-    public Map<SectionType, AbstractSection> getSections() {
-        return sections;
+    public Map<ContactType, String> getContacts() {
+        return contacts;
     }
 
-    public AbstractSection getSection(SectionType type) {
-        return sections.get(type);
+    public Map<SectionType, AbstractSection> getSections() {
+        return sections;
     }
 }
