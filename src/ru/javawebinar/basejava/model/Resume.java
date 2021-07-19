@@ -1,6 +1,6 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,8 +14,8 @@ public class Resume {
     private final String uuid;
     private final String fullName;
 
-    private Map<ContactType, String> contacts;
-    private Map<SectionType, AbstractSection> sections;
+    private final Map<ContactType, String> contacts;
+    private final Map<SectionType, AbstractSection> sections;
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -24,24 +24,8 @@ public class Resume {
     public Resume(String uuid, String fullName) {
         this.uuid = uuid;
         this.fullName = fullName;
-        this.contacts = new HashMap<>();
-        this.sections = new HashMap<>();
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public Map<ContactType, String> getContacts() {
-        return contacts;
-    }
-
-    public Map<SectionType, AbstractSection> getSections() {
-        return sections;
+        this.contacts = new EnumMap<>(ContactType.class);
+        this.sections = new EnumMap<>(SectionType.class);
     }
 
     @Override
@@ -62,6 +46,47 @@ public class Resume {
 
     @Override
     public String toString() {
-        return uuid + " (" + fullName + ")";
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(fullName).append("\n");
+
+        for (ContactType contactType : ContactType.values()) {
+            String contact = contacts.getOrDefault(contactType, null);
+            if (contact == null) continue;
+            builder.append(String.format("%s: %s%n", contactType.getDescription(), contact));
+        }
+        builder.append("\n");
+
+        for (SectionType sectionType : SectionType.values()) {
+            AbstractSection section = sections.getOrDefault(sectionType, null);
+            if (section == null) continue;
+            builder.append(sectionType.getTitle()).append("\n");
+            builder.append(section).append("\n\n");
+        }
+        return builder.toString();
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
+
+    public String getContact(ContactType type) {
+        return contacts.get(type);
+    }
+
+    public Map<SectionType, AbstractSection> getSections() {
+        return sections;
+    }
+
+    public AbstractSection getSection(SectionType type) {
+        return sections.get(type);
     }
 }

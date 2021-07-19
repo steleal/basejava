@@ -19,6 +19,11 @@ public class ListStorage extends AbstractStorage<Integer> {
         storage.clear();
     }
 
+    @Override
+    protected List<Resume> getListOfResumes() {
+        return new ArrayList<>(storage);
+    }
+
     protected Integer searchKey(String uuid) {
         int size = storage.size();
         for (int i = 0; i < size; i++) {
@@ -44,11 +49,6 @@ public class ListStorage extends AbstractStorage<Integer> {
 
     protected void deleteElement(Integer key) {
         storage.remove((int) key);
-    }
-
-    @Override
-    protected List<Resume> getListOfResumes() {
-        return new ArrayList<>(storage);
     }
 
 }

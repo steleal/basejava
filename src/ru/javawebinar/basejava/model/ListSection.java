@@ -24,6 +24,11 @@ public class ListSection<C> extends AbstractSection {
         return Objects.hash(items);
     }
 
+    @Override
+    public String toString() {
+        return items.stream().map(Object::toString).collect(Collectors.joining("\n"));
+    }
+
     public List<C> getItems() {
         return items;
     }
@@ -32,8 +37,4 @@ public class ListSection<C> extends AbstractSection {
         this.items = items;
     }
 
-    @Override
-    public String toString() {
-        return items.stream().map(Object::toString).collect(Collectors.joining("\n"));
-    }
 }

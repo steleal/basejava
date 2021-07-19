@@ -15,6 +15,14 @@ public abstract class AbstractStorage<SK> implements Storage {
     //    protected final Logger log = Logger.getLogger(getClass().getName());
     private static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
 
+    @Override
+    public List<Resume> getAllSorted() {
+        LOG.info("getAllSorted");
+        List<Resume> resumes = getListOfResumes();
+        resumes.sort(FULL_NAME_UUID_COMPARATOR);
+        return resumes;
+    }
+
     public void update(Resume r) {
         LOG.info("Update " + r);
         SK key = searchKey(r.getUuid());
@@ -41,14 +49,6 @@ public abstract class AbstractStorage<SK> implements Storage {
         SK key = searchKey(r.getUuid());
         checkNotExist(r.getUuid(), key);
         insertElement(r, key);
-    }
-
-    @Override
-    public List<Resume> getAllSorted() {
-        LOG.info("getAllSorted");
-        List<Resume> resumes = getListOfResumes();
-        resumes.sort(FULL_NAME_UUID_COMPARATOR);
-        return resumes;
     }
 
     protected abstract SK searchKey(String uuid);

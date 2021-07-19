@@ -35,6 +35,14 @@ public class Position {
         return Objects.hash(company, startDate, stopDate, title, description);
     }
 
+    @Override
+    public String toString() {
+        return "company=" + company +
+                ",\n\tstartDate=" + startDate + ", stopDate=" + stopDate +
+                ",\n\ttitle='" + title + '\'' +
+                ",\n\tdescription='" + description + '\'';
+    }
+
     public Company getCompany() {
         return company;
     }
@@ -73,13 +81,5 @@ public class Position {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return "company=" + company +
-                ",\n\tstartDate=" + startDate + ", stopDate=" + stopDate +
-                ",\n\ttitle='" + title + '\'' +
-                ",\n\tdescription='" + description + '\'';
     }
 }

@@ -25,6 +25,14 @@ public class Company {
         return Objects.hash(title, url);
     }
 
+    @Override
+    public String toString() {
+        return "Company{" +
+                "title='" + title + '\'' +
+                ", url='" + url + '\'' +
+                '}';
+    }
+
     public String getTitle() {
         return title;
     }
@@ -41,11 +49,4 @@ public class Company {
         this.url = url;
     }
 
-    @Override
-    public String toString() {
-        return "Company{" +
-                "title='" + title + '\'' +
-                ", url='" + url + '\'' +
-                '}';
-    }
 }

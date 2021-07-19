@@ -22,16 +22,16 @@ public class SimpleLineSection<C> extends AbstractSection {
         return Objects.hash(item);
     }
 
+    @Override
+    public String toString() {
+        return item.toString();
+    }
+
     public C getItem() {
         return item;
     }
 
     public void setItem(C item) {
         this.item = item;
-    }
-
-    @Override
-    public String toString() {
-        return item.toString();
     }
 }

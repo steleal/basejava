@@ -9,7 +9,6 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.SectionType;
 import ru.javawebinar.basejava.model.SimpleLineSection;
 
-import java.io.PrintStream;
 import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.Map;
@@ -30,31 +29,7 @@ import static ru.javawebinar.basejava.model.SectionType.QUALIFICATIONS;
 public class ResumeTestData {
     public static void main(String[] args) {
         Resume resume = createKislinResume();
-        printResume(resume);
-    }
-
-    private static void printResume(Resume resume) {
-        PrintStream out = System.out;
-
-        out.println(resume.getFullName());
-        out.println();
-
-        Map<ContactType, String> contacts = resume.getContacts();
-        for (ContactType contactType : ContactType.values()) {
-            String contact = contacts.getOrDefault(contactType, null);
-            if (contact == null) continue;
-            out.printf("%s: %s%n", contactType.getDescription(), contact);
-        }
-        out.println();
-
-        Map<SectionType, AbstractSection> sections = resume.getSections();
-        for (SectionType sectionType : SectionType.values()) {
-            AbstractSection section = sections.getOrDefault(sectionType, null);
-            if (section == null) continue;
-            out.println(sectionType.getTitle());
-            out.println(section);
-            out.println();
-        }
+        System.out.println(resume);
     }
 
     private static Resume createKislinResume() {
