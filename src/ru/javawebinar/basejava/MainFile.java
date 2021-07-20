@@ -29,5 +29,25 @@ public class MainFile {
             throw new RuntimeException(e);
         }
 
+        try {
+            System.out.println("============================");
+            recursivePrintDir(dir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
+
+    public static void recursivePrintDir(File dir) throws IOException {
+        String basePath = dir.getCanonicalPath();
+        System.out.println(basePath);
+        if (!dir.isDirectory()) return;
+        String[] list = dir.list();
+        if (list != null) {
+            for (String name : list) {
+                recursivePrintDir(new File(basePath + "/" + name));
+            }
+        }
+    }
+
 }
