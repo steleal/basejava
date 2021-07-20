@@ -24,7 +24,7 @@ public class ListStorage extends AbstractStorage<Integer> {
         return new ArrayList<>(storage);
     }
 
-    protected Integer searchKey(String uuid) {
+    protected Integer getSearchKey(String uuid) {
         int size = storage.size();
         for (int i = 0; i < size; i++) {
             Resume r = storage.get(i);
@@ -32,23 +32,27 @@ public class ListStorage extends AbstractStorage<Integer> {
                 return i;
             }
         }
-        return null;
+        return -1;
     }
 
-    protected Resume getElement(Integer key) {
+    protected Resume doGet(Integer key) {
         return storage.get(key);
     }
 
-    protected void insertElement(Resume r, Integer key) {
+    protected void doSave(Resume r, Integer key) {
         storage.add(r);
     }
 
-    protected void updateElement(Resume r, Integer key) {
+    protected void doUpdate(Resume r, Integer key) {
         storage.set(key, r);
     }
 
-    protected void deleteElement(Integer key) {
+    protected void doDelete(Integer key) {
         storage.remove((int) key);
     }
 
+    @Override
+    protected boolean isExist(Integer index) {
+        return index >= 0;
+    }
 }

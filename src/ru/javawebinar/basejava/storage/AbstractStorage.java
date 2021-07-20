@@ -25,56 +25,58 @@ public abstract class AbstractStorage<SK> implements Storage {
 
     public void update(Resume r) {
         LOG.info("Update " + r);
-        SK key = searchKey(r.getUuid());
-        checkExist(r.getUuid(), key);
-        updateElement(r, key);
+        SK key = getExistedSearchKey(r.getUuid());
+        doUpdate(r, key);
     }
 
     public Resume get(String uuid) {
         LOG.info("Get " + uuid);
-        SK key = searchKey(uuid);
-        checkExist(uuid, key);
-        return getElement(key);
+        SK key = getExistedSearchKey(uuid);
+        return doGet(key);
     }
 
     public void delete(String uuid) {
         LOG.info("Delete " + uuid);
-        SK key = searchKey(uuid);
-        checkExist(uuid, key);
-        deleteElement(key);
+        SK key = getExistedSearchKey(uuid);
+        doDelete(key);
     }
 
     public void save(Resume r) {
         LOG.info("Save " + r);
-        SK key = searchKey(r.getUuid());
-        checkNotExist(r.getUuid(), key);
-        insertElement(r, key);
+        SK key = getNotExistedSearchKey(r.getUuid());
+        doSave(r, key);
     }
 
-    protected abstract SK searchKey(String uuid);
-
-    protected abstract Resume getElement(SK key);
-
-    protected abstract void insertElement(Resume r, SK key);
-
-    protected abstract void updateElement(Resume r, SK key);
-
-    protected abstract void deleteElement(SK key);
-
-    protected abstract List<Resume> getListOfResumes();
-
-    protected void checkExist(String uuid, SK key) {
-        if (key == null) {
+    private SK getExistedSearchKey(String uuid) {
+        SK searchKey = getSearchKey(uuid);
+        if (!isExist(searchKey)) {
             LOG.warning("Resume " + uuid + " not exist");
             throw new NotExistStorageException(uuid);
         }
+        return searchKey;
     }
 
-    protected void checkNotExist(String uuid, SK key) {
-        if (key != null) {
+    private SK getNotExistedSearchKey(String uuid) {
+        SK searchKey = getSearchKey(uuid);
+        if (isExist(searchKey)) {
             LOG.warning("Resume " + uuid + " already exist");
             throw new ExistStorageException(uuid);
         }
+        return searchKey;
     }
+
+    protected abstract SK getSearchKey(String uuid);
+
+    protected abstract boolean isExist(SK searchKey);
+
+    protected abstract Resume doGet(SK key);
+
+    protected abstract void doSave(Resume r, SK key);
+
+    protected abstract void doUpdate(Resume r, SK key);
+
+    protected abstract void doDelete(SK key);
+
+    protected abstract List<Resume> getListOfResumes();
 
 }

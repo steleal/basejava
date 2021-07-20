@@ -52,19 +52,15 @@ public class Resume {
 
         builder.append(fullName).append("\n");
 
-        for (ContactType contactType : ContactType.values()) {
-            String contact = contacts.getOrDefault(contactType, null);
-            if (contact == null) continue;
-            builder.append(String.format("%s: %s%n", contactType.getTitle(), contact));
-        }
+        contacts.forEach((type, contact) -> builder.append(String.format("%s: %s%n", type.getTitle(), contact)));
+
         builder.append("\n");
 
-        for (SectionType sectionType : SectionType.values()) {
-            AbstractSection section = sections.getOrDefault(sectionType, null);
-            if (section == null) continue;
-            builder.append(sectionType.getTitle()).append("\n");
+        sections.forEach((type, section) -> {
+            builder.append(type.getTitle()).append("\n");
             builder.append(section).append("\n\n");
-        }
+        });
+
         return builder.toString();
     }
 

@@ -21,27 +21,27 @@ public class MapUuidStorage extends AbstractStorage<String> {
     }
 
     @Override
-    protected String searchKey(String uuid) {
+    protected String getSearchKey(String uuid) {
         return storage.containsKey(uuid) ? uuid : null;
     }
 
     @Override
-    protected Resume getElement(String uuid) {
+    protected Resume doGet(String uuid) {
         return storage.get(uuid);
     }
 
     @Override
-    protected void insertElement(Resume r, String uuid) {
+    protected void doSave(Resume r, String uuid) {
         storage.put(r.getUuid(), r);
     }
 
     @Override
-    protected void updateElement(Resume r, String uuid) {
+    protected void doUpdate(Resume r, String uuid) {
         storage.put(uuid, r);
     }
 
     @Override
-    protected void deleteElement(String uuid) {
+    protected void doDelete(String uuid) {
         storage.remove(uuid);
     }
 
@@ -50,4 +50,8 @@ public class MapUuidStorage extends AbstractStorage<String> {
         return new ArrayList<>(storage.values());
     }
 
+    @Override
+    protected boolean isExist(String uuid) {
+        return uuid != null;
+    }
 }

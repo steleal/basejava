@@ -1,7 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
@@ -31,11 +29,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
         size = 0;
     }
 
-    protected Resume getElement(Integer key) {
+    protected Resume doGet(Integer key) {
         return storage[key];
     }
 
-    protected void insertElement(Resume r, Integer key) {
+    protected void doSave(Resume r, Integer key) {
         if (size == STORAGE_LIMIT) {
             throw new StorageException("Storage overflow", r.getUuid());
         }
@@ -43,11 +41,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
         size++;
     }
 
-    protected void updateElement(Resume r, Integer key) {
+    protected void doUpdate(Resume r, Integer key) {
         storage[key] = r;
     }
 
-    protected void deleteElement(Integer key) {
+    protected void doDelete(Integer key) {
         fillDeletedElement(key);
         storage[size - 1] = null;
         size--;
@@ -57,17 +55,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
 
     protected abstract void insertResumeToStorage(Resume r, int index);
 
-    protected void checkExist(String uuid, Integer key) {
-        int index = key;
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-    }
-
-    protected void checkNotExist(String uuid, Integer key) {
-        int index = key;
-        if (index >= 0) {
-            throw new ExistStorageException(uuid);
-        }
+    @Override
+    protected boolean isExist(Integer index) {
+        return index >= 0;
     }
 }

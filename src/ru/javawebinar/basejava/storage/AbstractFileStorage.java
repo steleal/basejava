@@ -1,11 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.StorageException;
-import ru.javawebinar.basejava.model.Resume;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -36,7 +31,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         return 0;
     }
 
-    @Override
+/*    @Override
     protected File getSearchKey(String uuid) {
         return new File(directory, uuid);
     }
@@ -76,5 +71,5 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected List<Resume> doCopyAll() {
         return null;
-    }
+    }*/
 }

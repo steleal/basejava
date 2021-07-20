@@ -21,27 +21,27 @@ public class MapResumeStorage extends AbstractStorage<Resume> {
     }
 
     @Override
-    protected Resume searchKey(String uuid) {
+    protected Resume getSearchKey(String uuid) {
         return storage.getOrDefault(uuid, null);
     }
 
     @Override
-    protected Resume getElement(Resume resume) {
+    protected Resume doGet(Resume resume) {
         return resume;
     }
 
     @Override
-    protected void insertElement(Resume r, Resume resume) {
+    protected void doSave(Resume r, Resume resume) {
         storage.put(r.getUuid(), r);
     }
 
     @Override
-    protected void updateElement(Resume r, Resume resume) {
+    protected void doUpdate(Resume r, Resume resume) {
         storage.put(r.getUuid(), r);
     }
 
     @Override
-    protected void deleteElement(Resume resume) {
+    protected void doDelete(Resume resume) {
         storage.remove(resume.getUuid());
     }
 
@@ -50,4 +50,8 @@ public class MapResumeStorage extends AbstractStorage<Resume> {
         return new ArrayList<>(storage.values());
     }
 
+    @Override
+    protected boolean isExist(Resume resume) {
+        return resume != null;
+    }
 }
