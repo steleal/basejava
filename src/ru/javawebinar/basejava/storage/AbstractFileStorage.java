@@ -99,9 +99,9 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         return dirFiles().map(this::doGet).collect(Collectors.toList());
     }
 
-    protected abstract void doWrite(Resume r, OutputStream file) throws IOException;
+    protected abstract void doWrite(Resume r, OutputStream os) throws IOException;
 
-    protected abstract Resume doRead(InputStream file) throws IOException;
+    protected abstract Resume doRead(InputStream is) throws IOException;
 
     private Stream<File> dirFiles() {
         File[] files = directory.listFiles(File::isFile);
