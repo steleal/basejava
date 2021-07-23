@@ -20,7 +20,12 @@ public class ListStorage extends AbstractStorage<Integer> {
     }
 
     @Override
-    protected List<Resume> getListOfResumes() {
+    protected boolean isExist(Integer index) {
+        return index >= 0;
+    }
+
+    @Override
+    protected List<Resume> doCopyAll() {
         return new ArrayList<>(storage);
     }
 
@@ -51,8 +56,4 @@ public class ListStorage extends AbstractStorage<Integer> {
         storage.remove((int) key);
     }
 
-    @Override
-    protected boolean isExist(Integer index) {
-        return index >= 0;
-    }
 }

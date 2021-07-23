@@ -18,7 +18,7 @@ public abstract class AbstractStorage<SK> implements Storage {
     @Override
     public List<Resume> getAllSorted() {
         LOG.info("getAllSorted");
-        List<Resume> resumes = getListOfResumes();
+        List<Resume> resumes = doCopyAll();
         resumes.sort(FULL_NAME_UUID_COMPARATOR);
         return resumes;
     }
@@ -77,6 +77,6 @@ public abstract class AbstractStorage<SK> implements Storage {
 
     protected abstract void doDelete(SK key);
 
-    protected abstract List<Resume> getListOfResumes();
+    protected abstract List<Resume> doCopyAll();
 
 }

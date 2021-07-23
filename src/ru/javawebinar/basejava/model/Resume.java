@@ -15,7 +15,7 @@ public class Resume {
     private final String fullName;
 
     private final Map<ContactType, String> contacts;
-    private final Map<SectionType, AbstractSection> sections;
+    private final Map<SectionType, Section> sections;
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -72,7 +72,7 @@ public class Resume {
         return fullName;
     }
 
-    public AbstractSection getSection(SectionType type) {
+    public Section getSection(SectionType type) {
         return sections.get(type);
     }
 
@@ -80,11 +80,13 @@ public class Resume {
         return contacts.get(type);
     }
 
-    public Map<ContactType, String> getContacts() {
-        return contacts;
+    public void addContact(ContactType type, String contact) {
+        contacts.put(type, contact);
     }
 
-    public Map<SectionType, AbstractSection> getSections() {
-        return sections;
+    public void addSection(SectionType type, Section section) {
+        sections.put(type, section);
     }
+
+
 }

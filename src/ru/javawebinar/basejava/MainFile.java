@@ -29,23 +29,20 @@ public class MainFile {
             throw new RuntimeException(e);
         }
 
-        try {
-            System.out.println("============================");
-            recursivePrintDir(dir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        printDirectoryDeeply(dir);
 
     }
 
-    public static void recursivePrintDir(File dir) throws IOException {
-        String basePath = dir.getCanonicalPath();
-        System.out.println(basePath);
-        if (!dir.isDirectory()) return;
-        String[] list = dir.list();
-        if (list != null) {
-            for (String name : list) {
-                recursivePrintDir(new File(basePath + "/" + name));
+    public static void printDirectoryDeeply(File dir) {
+        File[] files = dir.listFiles();
+
+        if (files == null) return;
+        for (File file : files) {
+            if (file.isFile()) {
+                System.out.println("File: " + file.getName());
+            } else if (file.isDirectory()) {
+                System.out.println("Directory: " + file.getName());
+                printDirectoryDeeply(file);
             }
         }
     }

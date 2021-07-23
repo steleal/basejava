@@ -1,11 +1,15 @@
 package ru.javawebinar.basejava.model;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-public class ListSection extends AbstractSection {
+public class ListSection extends Section {
     private final List<String> items;
+
+    public ListSection(String... items) {
+        this(Arrays.asList(items));
+    }
 
     public ListSection(List<String> items) {
         Objects.requireNonNull(items, "items must be not null");
@@ -27,7 +31,7 @@ public class ListSection extends AbstractSection {
 
     @Override
     public String toString() {
-        return items.stream().map(Object::toString).collect(Collectors.joining("\n"));
+        return items.toString();
     }
 
     public List<String> getItems() {

@@ -2,7 +2,7 @@ package ru.javawebinar.basejava.model;
 
 import java.util.Objects;
 
-public class TextSection extends AbstractSection {
+public class TextSection extends Section {
     private final String content;
 
     public TextSection(String content) {
@@ -25,7 +25,7 @@ public class TextSection extends AbstractSection {
 
     @Override
     public String toString() {
-        return content.toString();
+        return content;
     }
 
     public String getContent() {
