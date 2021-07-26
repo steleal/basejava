@@ -3,6 +3,8 @@ package ru.javawebinar.basejava;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class MainFile {
     public static void main(String[] args) {
@@ -14,7 +16,7 @@ public class MainFile {
             throw new RuntimeException("Error", e);
         }
 
-        File dir = new File("src/ru/javawebinar/basejava");
+        File dir = new File("src/ru/javawebinar");
         System.out.println(dir.isDirectory());
         String[] list = dir.list();
         if (list != null) {
@@ -29,20 +31,24 @@ public class MainFile {
             throw new RuntimeException(e);
         }
 
-        printDirectoryDeeply(dir);
+        System.out.println("======================================================");
+        printDirectoryDeeply(dir, 0);
 
     }
 
-    public static void printDirectoryDeeply(File dir) {
+    public static void printDirectoryDeeply(File dir, int deep) {
         File[] files = dir.listFiles();
-
         if (files == null) return;
+        Arrays.sort(files, Comparator.comparing(File::isDirectory).reversed());
+        String tabs = deep == 0 ? "" : String.format("%" + 10 * deep + "s", " ");
         for (File file : files) {
+            System.out.print( tabs);
+            String name = file.getName();
             if (file.isFile()) {
-                System.out.println("File: " + file.getName());
+                System.out.println("File: " + name);
             } else if (file.isDirectory()) {
-                System.out.println("Directory: " + file.getName());
-                printDirectoryDeeply(file);
+                System.out.println("Dir:  " + name);
+                printDirectoryDeeply(file, deep + 1);
             }
         }
     }
