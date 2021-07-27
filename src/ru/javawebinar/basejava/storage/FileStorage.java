@@ -19,11 +19,11 @@ import java.util.stream.Stream;
  * gkislin
  * 22.07.2016
  */
-public abstract class AbstractFileStorage extends AbstractStorage<File> {
+public class FileStorage extends AbstractStorage<File> {
     private final File directory;
     private final Serializer serializer;
 
-    protected AbstractFileStorage(String dir, Serializer serializer) {
+    public FileStorage(String dir, Serializer serializer) {
         this.directory = new File(dir);
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
