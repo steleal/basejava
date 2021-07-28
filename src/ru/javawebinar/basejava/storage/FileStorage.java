@@ -2,7 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.storage.serializer.Serializer;
+import ru.javawebinar.basejava.storage.serializer.StreamSerializer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -22,9 +22,9 @@ import java.util.stream.Stream;
  */
 public class FileStorage extends AbstractStorage<File> {
     private final File directory;
-    private final Serializer serializer;
+    private final StreamSerializer serializer;
 
-    public FileStorage(String dir, Serializer serializer) {
+    public FileStorage(String dir, StreamSerializer serializer) {
         this.directory = new File(dir);
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
@@ -99,7 +99,7 @@ public class FileStorage extends AbstractStorage<File> {
     private Stream<File> dirFiles() {
         File[] files = directory.listFiles(File::isFile);
         if (files == null) {
-            throw new StorageException("Directory read error", null);
+            throw new StorageException("Directory read error");
         }
         return Arrays.stream(files);
     }

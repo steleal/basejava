@@ -2,7 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.storage.serializer.Serializer;
+import ru.javawebinar.basejava.storage.serializer.StreamSerializer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,9 +24,9 @@ import static java.nio.file.StandardOpenOption.READ;
  */
 public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
-    private final Serializer serializer;
+    private final StreamSerializer serializer;
 
-    public PathStorage(String dir, Serializer serializer) {
+    public PathStorage(String dir, StreamSerializer serializer) {
         directory = Paths.get(dir);
         Objects.requireNonNull(directory, "directory must not be null");
         Objects.requireNonNull(serializer, "serializer must not be null");
@@ -102,7 +102,7 @@ public class PathStorage extends AbstractStorage<Path> {
         try {
             return Files.list(directory).filter(Files::isRegularFile);
         } catch (IOException e) {
-            throw new StorageException("Directory read error", null);
+            throw new StorageException("Directory read error", e);
         }
     }
 
