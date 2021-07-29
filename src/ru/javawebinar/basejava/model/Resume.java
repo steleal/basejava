@@ -96,4 +96,11 @@ public class Resume implements Serializable {
         sections.put(type, section);
     }
 
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
+
+    public Map<SectionType, Section> getSections() {
+        return sections;
+    }
 }
