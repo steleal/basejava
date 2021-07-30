@@ -100,7 +100,7 @@ public class ResumeTestData {
                         "Проектирование и разработка онлайн платформы управления проектами Wrike " +
                                 "(Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). " +
                                 "Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO."));
-        Organization rit = new Organization("RIT Center", "",
+        Organization rit = new Organization("RIT Center", null,
                 new Position(
                         DateUtil.of(2012, 4),
                         DateUtil.of(2014, 10),
@@ -155,37 +155,37 @@ public class ResumeTestData {
                 new Position(
                         DateUtil.of(2013, 3),
                         DateUtil.of(2013, 5),
-                        "\"Functional Programming Principles in Scala\" by Martin Odersky", ""));
+                        "\"Functional Programming Principles in Scala\" by Martin Odersky", null));
         Organization luxoftEdu = new Organization("Luxoft", "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
                 new Position(
                         DateUtil.of(2011, 3),
                         DateUtil.of(2011, 4),
-                        "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"", ""));
+                        "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"", null));
         Organization siemensEdu = new Organization("Siemens AG", "http://www.siemens.ru/",
                 new Position(
                         DateUtil.of(2005, 1),
                         DateUtil.of(2005, 4),
-                        "3 месяца обучения мобильным IN сетям (Берлин)", ""));
+                        "3 месяца обучения мобильным IN сетям (Берлин)", null));
         Organization alcatelEdu = new Organization("Alcatel", "http://www.alcatel.ru/",
                 new Position(
                         DateUtil.of(1997, 9),
                         DateUtil.of(1998, 3),
-                        "6 месяцев обучения цифровым телефонным сетям (Москва)", ""));
+                        "6 месяцев обучения цифровым телефонным сетям (Москва)", null));
         Organization itmo = new Organization("Санкт-Петербургский национальный исследовательский университет информационных технологий, " +
                 "механики и оптики", "http://www.ifmo.ru/",
                 new Position(
                         DateUtil.of(1993, 9),
                         DateUtil.of(1996, 7),
-                        "Аспирантура (программист С, С++)", ""),
+                        "Аспирантура (программист С, С++)", null),
                 new Position(
                         DateUtil.of(1987, 9),
                         DateUtil.of(1993, 7),
-                        "Инженер (программист Fortran, C)", ""));
+                        "Инженер (программист Fortran, C)", null));
         Organization school = new Organization("Заочная физико-техническая школа при МФТИ", "http://www.school.mipt.ru/",
                 new Position(
                         DateUtil.of(1984, 9),
                         DateUtil.of(1987, 6),
-                        "Закончил с отличием", ""));
+                        "Закончил с отличием", null));
 
         resume.addSection(EXPERIENCE, new OrganizationSection(
                 javaOnlineProjects, wrike, rit, luxoftBank, yota, enkata, siemensAg, alcatel));
