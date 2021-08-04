@@ -1,104 +1,97 @@
 package ru.javawebinar.basejava;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class MainConcurrency {
-    private static int counter;
-    private static final Object LOCK = new Object();
+    private static final int THREADS_NUMBER = 10000;
+    private static final Lock LOCK = new ReentrantLock();
+    //    private int counter;
+    private AtomicInteger atomicCounter = new AtomicInteger();
+    private static final ThreadLocal<SimpleDateFormat> threadLocal = ThreadLocal.withInitial(() -> new SimpleDateFormat());
+//    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
-    public static void main(String[] args) throws InterruptedException {
-        System.out.println(Thread.currentThread().getName());
-        // 1 способ запуска - анонимный класс имл. Thread и переопределили run
-        Thread thread0 = new Thread() {
-            @Override
-            public void run() {
-                System.out.println(getName() + "," + getState()); // сокращенная запись.
-            }
-        };
-        thread0.start();
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        // предыдущие варианты см в коммитах Lesson 11.
 
-        // 2 способ запуска (предпочтительный) - класс Thread созданный от Runnable
-        new Thread(() -> {
-            System.out.println(Thread.currentThread().getName()); // У runnable нет getName, поэтому полная запись
-        }).start();
-        System.out.println(thread0.getName() + "," + thread0.getState());
-
-        // доступ к полю от одного потока
-        for (int i = 0; i < 10000; i++) {
-            for (int j = 0; j < 100; j++) {
-                counter++;
-            }
-        }
-        System.out.println(counter);
-
-        // многопоток без синхронизации (т.к. ++ не атомарен, глючит)
-        counter = 0;
-        for (int i = 0; i < 10000; i++) {
-            new Thread(() -> {
-                for (int j = 0; j < 100; j++) {
-                    counter++;
-                }
-            }).start();
-        }
-        Thread.sleep(500);
-        System.out.println(counter);
-
-        // многопоток с синхронизацией по классу ( исправили на объекту Lock)
-        counter = 0;
-        for (int i = 0; i < 10000; i++) {
-            new Thread(() -> {
-                for (int j = 0; j < 100; j++) {
-                    staticInc();
-                }
-            }).start();
-        }
-        Thread.sleep(500);
-        System.out.println(counter);
-
-        // многопоток с синхронизацией по объекту (this)
-        counter = 0;
-        MainConcurrency mainConcurrency = new MainConcurrency();
-        for (int i = 0; i < 10000; i++) {
-            new Thread(() -> {
-                for (int j = 0; j < 100; j++) {
-                    mainConcurrency.notStaticInc();
-                }
-            }).start();
-        }
-        Thread.sleep(500);
-        System.out.println(counter);
-
-        // многопоток с join - чтоб не спать неизвестно сколько.
-        counter = 0;
+        /*
+        // Работа с защелкой из пакета concurrent.
+        // Ждем, пока счетчик защелки не станет равным нулю - т.е. пока не отработают все потоки,
+        // но не дольше 10 секунд.
+        final MainConcurrency mainConcurrency = new MainConcurrency();
+        CountDownLatch latch = new CountDownLatch(THREADS_NUMBER);
         List<Thread> threads = new ArrayList<>();
-        MainConcurrency mainConcurrency1 = new MainConcurrency();
-        for (int i = 0; i < 10000; i++) {
+
+        for (int i = 0; i < THREADS_NUMBER; i++) {
             Thread thread = new Thread(() -> {
                 for (int j = 0; j < 100; j++) {
-                    mainConcurrency1.notStaticInc();
+                    mainConcurrency.inc();
                 }
+                latch.countDown();
             });
-            threads.add(thread);
             thread.start();
+            threads.add(thread);
         }
-        for (Thread thread : threads) {
-            thread.join();
+
+        latch.await(10, TimeUnit.SECONDS);
+        System.out.println(mainConcurrency.counter);
+        */
+
+        // Работа с Executors
+        // Лучше определять, сколько потоков создавать, в зависимости от доступного числа ядер,
+        // для предсказуемости поведения.
+        final MainConcurrency mainConcurrency = new MainConcurrency();
+        CountDownLatch latch = new CountDownLatch(THREADS_NUMBER);
+        int processorsNumber = Runtime.getRuntime().availableProcessors();
+        ExecutorService executorService = Executors.newFixedThreadPool(processorsNumber);
+//        CompletionService completionService = new ExecutorCompletionService(executorService);
+
+        for (int i = 0; i < THREADS_NUMBER; i++) {
+            Future<Integer> future = executorService.submit(() -> {
+                for (int j = 0; j < 100; j++) {
+                    mainConcurrency.inc();
+//                    sdf.format(new Date()); // плохо, из-за использования непотокобезопасного объекта
+//                   Лучше использовать свой экземпляр для каждого потока, но создавать дорого.
+//                  или использовать DateTimeFormatter (потокобезопасен) или ThreadLocal.
+                    System.out.println(threadLocal.get().format(new Date()));
+
+                }
+                latch.countDown();
+                return 1; // меняем Runnable на Callable, вернет Future (отложенный результат)
+            });
+//            System.out.println(future.isDone() + " " + future.get() + " " + future.isDone());
         }
-        System.out.println(counter);
+
+        // если не ожидать, то часть нитей не успеет запуститься - у нас всего 4 нити макс.
+        latch.await(10, TimeUnit.SECONDS);
+
+        // если executorService не погасить, программа останется работать.
+        // shutdown vs shutdownNow:
+        // shutdown позволяет завершиться уже запущеным задачам.
+        // shutdownNow пытается их прервать.
+        executorService.shutdown();
+
+        System.out.println(mainConcurrency.atomicCounter);
     }
 
-
-    private static void staticInc() { // private static synchronized void inc() { - синхронизация по классу
-        double a = Math.sin(13.0);
-        synchronized (LOCK) { // синхронизация по объекту
+    private void inc() { // synchronized
+        atomicCounter.incrementAndGet();
+        /*
+        LOCK.lock();
+        try {
             counter++;
+        } finally {
+            LOCK.unlock();
         }
-    }
-
-    private void notStaticInc() {
-        synchronized (this) {
-            counter++;
-        }
+        */
     }
 }
