@@ -29,15 +29,15 @@ public class DataStreamSerializer implements StreamSerializer {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
 
-            writeWithException(r.getContacts().entrySet(), dos, (dos1, entry) -> {
-                dos1.writeUTF(entry.getKey().name());
-                dos1.writeUTF(entry.getValue());
+            writeCollection(r.getContacts().entrySet(), dos, (entry) -> {
+                dos.writeUTF(entry.getKey().name());
+                dos.writeUTF(entry.getValue());
             });
 
-            writeWithException(r.getSections().entrySet(), dos, (dos1, entry) -> {
+            writeCollection(r.getSections().entrySet(), dos, (entry) -> {
                 SectionType sectionType = entry.getKey();
-                dos1.writeUTF(sectionType.name());
-                writeSection(dos1, sectionType, entry.getValue());
+                dos.writeUTF(sectionType.name());
+                writeSection(dos, sectionType, entry.getValue());
             });
         }
     }
@@ -49,11 +49,11 @@ public class DataStreamSerializer implements StreamSerializer {
             String fullName = dis.readUTF();
             Resume resume = new Resume(uuid, fullName);
 
-            readWithException(dis, (dis1) -> resume.addContact(ContactType.valueOf(dis1.readUTF()), dis1.readUTF()));
+            readItems(dis, () -> resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF()));
 
-            readWithException(dis, (dis1) -> {
-                SectionType sectionType = SectionType.valueOf(dis1.readUTF());
-                resume.addSection(sectionType, readSection(dis1, sectionType));
+            readItems(dis, () -> {
+                SectionType sectionType = SectionType.valueOf(dis.readUTF());
+                resume.addSection(sectionType, readSection(dis, sectionType));
             });
             return resume;
         }
@@ -69,22 +69,20 @@ public class DataStreamSerializer implements StreamSerializer {
             case ACHIEVEMENT:
             case QUALIFICATIONS:
                 // ListSection
-                writeWithException(((ListSection) section).getItems(), dos, DataOutputStream::writeUTF);
+                writeCollection(((ListSection) section).getItems(), dos, dos::writeUTF);
                 break;
             case EXPERIENCE:
             case EDUCATION:
                 // OrganizationSection
-                writeWithException(((OrganizationSection) section).getOrganizations(), dos, (dos1, organization) -> {
+                writeCollection(((OrganizationSection) section).getOrganizations(), dos, (organization) -> {
                     Link link = organization.getHomePage();
-                    dos1.writeUTF(link.getName());
-                    String url = link.getUrl();
-                    dos1.writeUTF(url == null ? "" : url);
-                    writeWithException(organization.getPositions(), dos1, (dos2, position) -> {
-                        writeLocalDate(dos2, position.getStartDate());
-                        writeLocalDate(dos2, position.getEndDate());
-                        dos2.writeUTF(position.getTitle());
-                        String description = position.getDescription();
-                        dos2.writeUTF(description == null ? "" : description);
+                    dos.writeUTF(link.getName());
+                    dos.writeUTF(link.getUrl());
+                    writeCollection(organization.getPositions(), dos, (position) -> {
+                        writeLocalDate(dos, position.getStartDate());
+                        writeLocalDate(dos, position.getEndDate());
+                        dos.writeUTF(position.getTitle());
+                        dos.writeUTF(position.getDescription());
                     });
                 });
                 break;
@@ -100,30 +98,16 @@ public class DataStreamSerializer implements StreamSerializer {
             case ACHIEVEMENT:
             case QUALIFICATIONS:
                 // ListSection
-                List<String> items = new ArrayList<>();
-                readWithException(dis, (dis1) -> items.add(dis.readUTF()));
-                return new ListSection(items);
+                return new ListSection(readList(dis, () -> dis.readUTF()));
             case EXPERIENCE:
             case EDUCATION:
                 // OrganizationSection
-                List<Organization> organizations = new ArrayList<>();
-                readWithException(dis, (dis1) -> {
-                    String name = dis1.readUTF();
-                    String url = dis1.readUTF();
-                    url = "".equals(url) ? null : url;
-                    Link link = new Link(name, url);
-                    List<Position> positions = new ArrayList<>();
-                    readWithException(dis1, (dis2) -> {
-                        LocalDate startDate = readLocalDate(dis2);
-                        LocalDate endDate = readLocalDate(dis2);
-                        String title = dis2.readUTF();
-                        String description = dis2.readUTF();
-                        description = "".equals(description) ? null : description;
-                        positions.add(new Position(startDate, endDate, title, description));
-                    });
-                    organizations.add(new Organization(link, positions));
-                });
-                return new OrganizationSection(organizations);
+                return new OrganizationSection(
+                        readList(dis, () -> new Organization(
+                                new Link(dis.readUTF(), dis.readUTF()),
+                                readList(dis, () -> new Position(
+                                        readLocalDate(dis), readLocalDate(dis), dis.readUTF(), dis.readUTF())
+                                ))));
             default:
                 throw new IllegalStateException("Section not found");
         }
@@ -139,28 +123,42 @@ public class DataStreamSerializer implements StreamSerializer {
         dos.writeInt(date.getDayOfMonth());
     }
 
-    private <T> void writeWithException(Collection<T> items, DataOutputStream dos, BiConsumerWithIOException<DataOutputStream, T> action)
+    private <T> void writeCollection(Collection<T> items, DataOutputStream dos, ElementWriter<T> writer)
             throws IOException {
         dos.writeInt(items.size());
         for (T item : items) {
-            action.accept(dos, item);
+            writer.write(item);
         }
     }
 
-    private void readWithException(DataInputStream dis, ConsumerWithIOException<DataInputStream> action) throws IOException {
-        int contSize = dis.readInt();
-        for (int i = 0; i < contSize; i++) {
-            action.accept(dis);
+    private <T> List<T> readList(DataInputStream dis, ElementReader<T> reader) throws IOException {
+        int size = dis.readInt();
+        List<T> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(reader.read());
+        }
+        return list;
+    }
+
+    private void readItems(DataInputStream dis, ElementProcessor processor) throws IOException {
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            processor.process();
         }
     }
 
     @FunctionalInterface
-    public interface BiConsumerWithIOException<S, T> {
-        void accept(S stream, T item) throws IOException;
+    private interface ElementWriter<T> {
+        void write(T item) throws IOException;
     }
 
     @FunctionalInterface
-    public interface ConsumerWithIOException<S> {
-        void accept(S stream) throws IOException;
+    private interface ElementProcessor {
+        void process() throws IOException;
+    }
+
+    @FunctionalInterface
+    private interface ElementReader<T> {
+        T read() throws IOException;
     }
 }
