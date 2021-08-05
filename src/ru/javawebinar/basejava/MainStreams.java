@@ -2,7 +2,6 @@ package ru.javawebinar.basejava;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MainStreams {
@@ -31,11 +30,8 @@ public class MainStreams {
 
     public static List<Integer> oddOrEven(List<Integer> integers) {
         int sum = integers.stream().mapToInt(Integer::intValue).sum();
-        Predicate<Integer> oddOrEven = sum % 2 == 0
-                ? v -> v % 2 == 1
-                : v -> v % 2 == 0;
         return integers.stream()
-                .filter(oddOrEven)
+                .filter(v -> (sum + v) % 2 != 0)
                 .collect(Collectors.toList());
     }
 }
