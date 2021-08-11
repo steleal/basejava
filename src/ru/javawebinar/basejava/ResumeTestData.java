@@ -32,6 +32,7 @@ public class ResumeTestData {
     public static Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
 
+        /*
         resume.addContact(PHONE, "+7(921) 855-0482");
         resume.addContact(SKYPE, "grigory.kislin");
         resume.addContact(MAIL, "gkislin@yandex.ru");
@@ -192,7 +193,7 @@ public class ResumeTestData {
 
         resume.addSection(EDUCATION, new OrganizationSection(
                 coursera, luxoftEdu, siemensEdu, alcatelEdu, itmo, school));
-
+        */
         return resume;
     }
 }
