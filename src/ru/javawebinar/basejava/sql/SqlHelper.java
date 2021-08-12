@@ -19,10 +19,10 @@ public class SqlHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <T> T executeQuery(String query, QueryWithResult<T> function) {
+    public <T> T execute(String query, SqlExecutor<T> function) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
-            return function.apply(ps);
+            return function.execute(ps);
         } catch (SQLException e) {
             if (UNIQUE_VIOLATION.equals(e.getSQLState())) {
                 throw new ExistStorageException(getUuidFrom(e.getMessage()));
@@ -32,7 +32,7 @@ public class SqlHelper {
     }
 
     public void execute(String query) {
-        executeQuery(query, PreparedStatement::execute);
+        execute(query, PreparedStatement::execute);
     }
 
     private String getUuidFrom(String errorMessage) {
@@ -40,8 +40,4 @@ public class SqlHelper {
         return substringBetween(errorMessage, "(uuid)=(", ") already exists");
     }
 
-    @FunctionalInterface
-    public interface QueryWithResult<T> {
-        T apply(PreparedStatement ps) throws SQLException;
-    }
 }
