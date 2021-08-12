@@ -1,8 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
@@ -37,34 +35,32 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume r) {
-        int count = sqlHelper.executeQuery("UPDATE resume SET full_name = ? WHERE uuid = ?", (ps) -> {
+        String uuid = r.getUuid();
+        sqlHelper.executeQuery("UPDATE resume SET full_name = ? WHERE uuid = ?", (ps) -> {
             ps.setString(1, r.getFullName());
-            ps.setString(2, r.getUuid());
-            return ps.executeUpdate();
+            ps.setString(2, uuid);
+            if (ps.executeUpdate() == 0) throw new NotExistStorageException(uuid);
+            return null;
         });
-        if (count == 0) throw new NotExistStorageException(r.getUuid());
+
     }
 
     @Override
     public void save(Resume r) {
-        try {
-            sqlHelper.executeQuery("INSERT INTO resume (uuid, full_name) VALUES (?,?)", (ps) -> {
-                ps.setString(1, r.getUuid());
-                ps.setString(2, r.getFullName());
-                return ps.execute();
-            });
-        } catch (StorageException e) {
-            throw new ExistStorageException(r.getUuid());
-        }
+        sqlHelper.executeQuery("INSERT INTO resume (uuid, full_name) VALUES (?,?)", (ps) -> {
+            ps.setString(1, r.getUuid());
+            ps.setString(2, r.getFullName());
+            return ps.execute();
+        });
     }
 
     @Override
     public void delete(String uuid) {
-        boolean wasDelete = sqlHelper.executeQuery("DELETE FROM resume WHERE uuid = ?", (ps) -> {
+        sqlHelper.executeQuery("DELETE FROM resume WHERE uuid = ?", (ps) -> {
             ps.setString(1, uuid);
-            return ps.execute();
+            if (ps.executeUpdate() == 0) throw new NotExistStorageException(uuid);
+            return null;
         });
-        if (!wasDelete) throw new NotExistStorageException(uuid);
     }
 
     @Override
@@ -73,7 +69,7 @@ public class SqlStorage implements Storage {
             ResultSet rs = ps.executeQuery();
             List<Resume> resumes = new ArrayList<>();
             while (rs.next()) {
-                resumes.add(new Resume(rs.getString("uuid").trim(), rs.getString("full_name")));
+                resumes.add(new Resume(rs.getString("uuid"), rs.getString("full_name")));
             }
             return resumes;
         });
