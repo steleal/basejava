@@ -1,6 +1,6 @@
 package ru.javawebinar.basejava.util;
 
-public class StringUtils {
+public class StringUtil {
 
     public static String substringBetween(String string, String left, String right) {
         int start = string.indexOf(left);

@@ -1,22 +1,22 @@
 package ru.javawebinar.basejava.sql;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
+import ru.javawebinar.basejava.util.ExceptionUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static ru.javawebinar.basejava.util.StringUtils.substringBetween;
-
 
 public class SqlHelper {
-    public static final String UNIQUE_VIOLATION = "23505";
-
     public final ConnectionFactory connectionFactory;
 
     public SqlHelper(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
+    }
+
+    public void execute(String query) {
+        execute(query, PreparedStatement::execute);
     }
 
     public <T> T execute(String query, SqlExecutor<T> function) {
@@ -24,20 +24,23 @@ public class SqlHelper {
              PreparedStatement ps = conn.prepareStatement(query)) {
             return function.execute(ps);
         } catch (SQLException e) {
-            if (UNIQUE_VIOLATION.equals(e.getSQLState())) {
-                throw new ExistStorageException(getUuidFrom(e.getMessage()));
-            }
-            throw new StorageException(e);
+            throw ExceptionUtil.convertException(e);
         }
     }
 
-    public void execute(String query) {
-        execute(query, PreparedStatement::execute);
+    public <T> T transactionalExecute(SqlTransaction<T> executor) {
+        try (Connection conn = connectionFactory.getConnection()) {
+            try {
+                conn.setAutoCommit(false);
+                T res = executor.execute(conn);
+                conn.commit();
+                return res;
+            } catch (SQLException e) {
+                conn.rollback(); // при роллбеке тоже может быть исключение, которое надо обрабатывать.
+                throw ExceptionUtil.convertException(e);
+            }
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
     }
-
-    private String getUuidFrom(String errorMessage) {
-        // "Подробности: Key (uuid)=(d75bc6c7-863f-4d5e-aff3-cd7db26cf87a) already exists."
-        return substringBetween(errorMessage, "(uuid)=(", ") already exists");
-    }
-
 }
