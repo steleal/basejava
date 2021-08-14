@@ -31,14 +31,25 @@ public class ResumeTestData {
 
     public static Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
+        addContactsTo(resume);
+//        addSectionsTo(resume);
+        return resume;
+    }
 
+    public static Resume createOnlyNameResume(String uuid, String fullName) {
+        return new Resume(uuid, fullName);
+    }
+
+    private static void addContactsTo(Resume resume) {
         resume.addContact(PHONE, "+7(921) 855-0482");
         resume.addContact(SKYPE, "grigory.kislin");
         resume.addContact(MAIL, "gkislin@yandex.ru");
         resume.addContact(LINKEDIN, "https://www.linkedin.com/in/gkislin");
         resume.addContact(GITHUB, "https://github.com/gkislin");
         resume.addContact(HOME_PAGE, "http://gkislin.ru/");
-        /*
+    }
+
+    private static void addSectionsTo(Resume resume) {
         resume.addSection(OBJECTIVE, new TextSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"));
 
         resume.addSection(PERSONAL, new TextSection("Аналитический склад ума, сильная логика, креативность, инициативность. " +
@@ -192,7 +203,5 @@ public class ResumeTestData {
 
         resume.addSection(EDUCATION, new OrganizationSection(
                 coursera, luxoftEdu, siemensEdu, alcatelEdu, itmo, school));
-        */
-        return resume;
     }
 }

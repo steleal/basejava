@@ -19,16 +19,23 @@ public class SqlHelper {
         execute(query, PreparedStatement::execute);
     }
 
-    public <T> T execute(String query, SqlExecutor<T> function) {
-        try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            return function.execute(ps);
+    public <T> T execute(String query, SqlExecutor<T> executor) {
+        try (Connection conn = connectionFactory.getConnection()) {
+            return execute(conn, query, executor);
         } catch (SQLException e) {
             throw ExceptionUtil.convertException(e);
         }
     }
 
-    public <T> T transactionalExecute(SqlTransaction<T> executor) {
+    public <T> T execute(Connection conn, String query, SqlExecutor<T> executor) {
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            return executor.execute(ps);
+        } catch (SQLException e) {
+            throw ExceptionUtil.convertException(e);
+        }
+    }
+
+    public <T> T doInTransaction(SqlTransaction<T> executor) {
         try (Connection conn = connectionFactory.getConnection()) {
             try {
                 conn.setAutoCommit(false);
