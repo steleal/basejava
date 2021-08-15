@@ -33,7 +33,8 @@ public class SqlStorage implements Storage {
                 "SELECT * FROM resume r " +
                         " LEFT JOIN contact c " +
                         "  ON r.uuid = c.resume_uuid  " +
-                        " WHERE r.uuid =?", ps -> {
+                        " WHERE r.uuid =?",
+                ps -> {
                     ps.setString(1, uuid);
                     ResultSet rs = ps.executeQuery();
                     if (!rs.next()) {
@@ -49,19 +50,15 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume r) {
-        String uuid = r.getUuid();
         sqlHelper.doInTransaction(conn -> {
             sqlHelper.execute(conn, "UPDATE resume SET full_name = ? WHERE uuid = ?", (ps) -> {
+                String uuid = r.getUuid();
                 ps.setString(1, r.getFullName());
                 ps.setString(2, uuid);
                 if (ps.executeUpdate() == 0) throw new NotExistStorageException(uuid);
                 return null;
             });
-            sqlHelper.execute(conn, "DELETE FROM contact WHERE resume_uuid = ?", (ps) -> {
-                ps.setString(1, uuid);
-                ps.executeUpdate();
-                return null;
-            });
+            deleteContacts(r, conn);
             insertContacts(r, conn);
             return null;
         });
@@ -120,6 +117,14 @@ public class SqlStorage implements Storage {
             ResultSet rs = ps.executeQuery();
             rs.next();
             return rs.getInt("count");
+        });
+    }
+
+    private void deleteContacts(Resume r, Connection conn) {
+        sqlHelper.execute(conn, "DELETE FROM contact WHERE resume_uuid = ?", (ps) -> {
+            ps.setString(1, r.getUuid());
+            ps.execute();
+            return null;
         });
     }
 
