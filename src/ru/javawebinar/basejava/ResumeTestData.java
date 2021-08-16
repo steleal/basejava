@@ -32,7 +32,9 @@ public class ResumeTestData {
     public static Resume createResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
         addContactsTo(resume);
-//        addSectionsTo(resume);
+        addTextSectionsTo(resume);
+        addListSectionsTo(resume);
+//        addOrganizationSectionsTo(resume);
         return resume;
     }
 
@@ -49,12 +51,14 @@ public class ResumeTestData {
         resume.addContact(HOME_PAGE, "http://gkislin.ru/");
     }
 
-    private static void addSectionsTo(Resume resume) {
+    private static void addTextSectionsTo(Resume resume) {
         resume.addSection(OBJECTIVE, new TextSection("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям"));
 
         resume.addSection(PERSONAL, new TextSection("Аналитический склад ума, сильная логика, креативность, инициативность. " +
                 "Пурист кода и архитектуры."));
+    }
 
+    private static void addListSectionsTo(Resume resume) {
         resume.addSection(ACHIEVEMENT, new ListSection(
                 "С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven." +
                         " Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)\". " +
@@ -96,7 +100,9 @@ public class ResumeTestData {
                         "шаблонов, UML, функционального программирования",
                 "Родной русский, английский \"upper intermediate\""
         ));
+    }
 
+    private static void addOrganizationSectionsTo(Resume resume) {
         Organization javaOnlineProjects = new Organization("Java Online Projects", "http://javaops.ru/",
                 new Position(
                         DateUtil.of(2012, 10),

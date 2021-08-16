@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class Config {
     private static final Config INSTANCE = new Config();
-    private static final String PROPS = "config\\resumes.properties";
+    private static final String PROPS = "D:\\topjava\\basejava\\config\\resumes.properties";
 
     private final File storageDir;
     private final SqlStorage sqlStorage;
