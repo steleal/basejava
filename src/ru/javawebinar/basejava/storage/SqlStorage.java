@@ -41,7 +41,7 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         return sqlHelper.doInTransaction(conn -> {
-            Resume resume = sqlHelper.execute(conn, "SELECT uuid, full_name FROM resume WHERE uuid =?",
+            Resume resume = sqlHelper.executeInConn(conn, "SELECT uuid, full_name FROM resume WHERE uuid =?",
                     ps -> {
                         ps.setString(1, uuid);
                         ResultSet rs = ps.executeQuery();
@@ -50,7 +50,7 @@ public class SqlStorage implements Storage {
                         }
                         return new Resume(uuid, rs.getString("full_name"));
                     });
-            sqlHelper.execute(conn, "SELECT resume_uuid, type, value FROM contact WHERE resume_uuid = ?",
+            sqlHelper.executeInConn(conn, "SELECT resume_uuid, type, value FROM contact WHERE resume_uuid = ?",
                     ps -> {
                         ps.setString(1, uuid);
                         ResultSet rs = ps.executeQuery();
@@ -59,7 +59,7 @@ public class SqlStorage implements Storage {
                         }
                         return null;
                     });
-            sqlHelper.execute(conn, "SELECT resume_uuid, type, value FROM section WHERE resume_uuid = ?",
+            sqlHelper.executeInConn(conn, "SELECT resume_uuid, type, value FROM section WHERE resume_uuid = ?",
                     ps -> {
                         ps.setString(1, uuid);
                         ResultSet rs = ps.executeQuery();
@@ -75,7 +75,7 @@ public class SqlStorage implements Storage {
     @Override
     public void update(Resume r) {
         sqlHelper.doInTransaction(conn -> {
-            sqlHelper.execute(conn, "UPDATE resume SET full_name = ? WHERE uuid = ?", (ps) -> {
+            sqlHelper.executeInConn(conn, "UPDATE resume SET full_name = ? WHERE uuid = ?", (ps) -> {
                 String uuid = r.getUuid();
                 ps.setString(1, r.getFullName());
                 ps.setString(2, uuid);
@@ -93,7 +93,7 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         sqlHelper.doInTransaction(conn -> {
-            sqlHelper.execute(conn, "INSERT INTO resume (uuid, full_name) VALUES (?,?)", ps -> {
+            sqlHelper.executeInConn(conn, "INSERT INTO resume (uuid, full_name) VALUES (?,?)", ps -> {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
                 ps.execute();
@@ -118,7 +118,7 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         return sqlHelper.doInTransaction(conn -> {
             Map<String, Resume> resumes = new LinkedHashMap<>();
-            sqlHelper.execute(conn, "SELECT uuid, full_name FROM resume ORDER BY full_name, uuid", ps -> {
+            sqlHelper.executeInConn(conn, "SELECT uuid, full_name FROM resume ORDER BY full_name, uuid", ps -> {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     String uuid = rs.getString("uuid");
@@ -126,7 +126,7 @@ public class SqlStorage implements Storage {
                 }
                 return null;
             });
-            sqlHelper.execute(conn, "SELECT resume_uuid, type, value FROM contact", ps -> {
+            sqlHelper.executeInConn(conn, "SELECT resume_uuid, type, value FROM contact", ps -> {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     Resume resume = resumes.get(rs.getString("resume_uuid"));
@@ -134,7 +134,7 @@ public class SqlStorage implements Storage {
                 }
                 return null;
             });
-            sqlHelper.execute(conn, "SELECT resume_uuid, type, value FROM section", ps -> {
+            sqlHelper.executeInConn(conn, "SELECT resume_uuid, type, value FROM section", ps -> {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     Resume resume = resumes.get(rs.getString("resume_uuid"));
@@ -156,7 +156,7 @@ public class SqlStorage implements Storage {
     }
 
     private void deleteContacts(Resume r, Connection conn) {
-        sqlHelper.execute(conn, "DELETE FROM contact WHERE resume_uuid = ?", (ps) -> {
+        sqlHelper.executeInConn(conn, "DELETE FROM contact WHERE resume_uuid = ?", (ps) -> {
             ps.setString(1, r.getUuid());
             ps.execute();
             return null;
@@ -164,7 +164,7 @@ public class SqlStorage implements Storage {
     }
 
     private void insertContacts(Resume r, Connection conn) {
-        sqlHelper.execute(conn, "INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)", ps -> {
+        sqlHelper.executeInConn(conn, "INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)", ps -> {
             String uuid = r.getUuid();
             for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
                 ps.setString(1, uuid);
@@ -185,7 +185,7 @@ public class SqlStorage implements Storage {
     }
 
     private void deleteSections(Resume r, Connection conn) {
-        sqlHelper.execute(conn, "DELETE FROM section WHERE resume_uuid = ?", (ps) -> {
+        sqlHelper.executeInConn(conn, "DELETE FROM section WHERE resume_uuid = ?", (ps) -> {
             ps.setString(1, r.getUuid());
             ps.execute();
             return null;
@@ -193,7 +193,7 @@ public class SqlStorage implements Storage {
     }
 
     private void insertSections(Resume r, Connection conn) {
-        sqlHelper.execute(conn, "INSERT INTO section (resume_uuid, type, value) VALUES (?,?,?)", ps -> {
+        sqlHelper.executeInConn(conn, "INSERT INTO section (resume_uuid, type, value) VALUES (?,?,?)", ps -> {
             String uuid = r.getUuid();
             for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
                 ps.setString(1, uuid);

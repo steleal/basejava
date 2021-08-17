@@ -21,13 +21,13 @@ public class SqlHelper {
 
     public <T> T execute(String query, SqlExecutor<T> executor) {
         try (Connection conn = connectionFactory.getConnection()) {
-            return execute(conn, query, executor);
+            return executeInConn(conn, query, executor);
         } catch (SQLException e) {
             throw ExceptionUtil.convertException(e);
         }
     }
 
-    public <T> T execute(Connection conn, String query, SqlExecutor<T> executor) {
+    public <T> T executeInConn(Connection conn, String query, SqlExecutor<T> executor) {
         try (PreparedStatement ps = conn.prepareStatement(query)) {
             return executor.execute(ps);
         } catch (SQLException e) {
