@@ -17,7 +17,7 @@ CREATE TABLE section
     id          SERIAL PRIMARY KEY,
     resume_uuid TEXT NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
     type        TEXT NOT NULL,
-    content     TEXT NOT NULL
+    value       TEXT NOT NULL
 );
 
 CREATE UNIQUE INDEX contact_resume_uuid_type_index

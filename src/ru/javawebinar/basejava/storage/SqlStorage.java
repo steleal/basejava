@@ -41,8 +41,7 @@ public class SqlStorage implements Storage {
     @Override
     public Resume get(String uuid) {
         return sqlHelper.doInTransaction(conn -> {
-            Resume resume = sqlHelper.execute(
-                    "SELECT uuid, full_name FROM resume WHERE uuid =?",
+            Resume resume = sqlHelper.execute(conn, "SELECT uuid, full_name FROM resume WHERE uuid =?",
                     ps -> {
                         ps.setString(1, uuid);
                         ResultSet rs = ps.executeQuery();
@@ -51,7 +50,7 @@ public class SqlStorage implements Storage {
                         }
                         return new Resume(uuid, rs.getString("full_name"));
                     });
-            sqlHelper.execute("SELECT resume_uuid, type, value FROM contact WHERE resume_uuid = ?",
+            sqlHelper.execute(conn, "SELECT resume_uuid, type, value FROM contact WHERE resume_uuid = ?",
                     ps -> {
                         ps.setString(1, uuid);
                         ResultSet rs = ps.executeQuery();
@@ -60,7 +59,7 @@ public class SqlStorage implements Storage {
                         }
                         return null;
                     });
-            sqlHelper.execute("SELECT resume_uuid, type, content FROM section WHERE resume_uuid = ?",
+            sqlHelper.execute(conn, "SELECT resume_uuid, type, value FROM section WHERE resume_uuid = ?",
                     ps -> {
                         ps.setString(1, uuid);
                         ResultSet rs = ps.executeQuery();
@@ -135,7 +134,7 @@ public class SqlStorage implements Storage {
                 }
                 return null;
             });
-            sqlHelper.execute(conn, "SELECT resume_uuid, type, content FROM section", ps -> {
+            sqlHelper.execute(conn, "SELECT resume_uuid, type, value FROM section", ps -> {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     Resume resume = resumes.get(rs.getString("resume_uuid"));
@@ -194,7 +193,7 @@ public class SqlStorage implements Storage {
     }
 
     private void insertSections(Resume r, Connection conn) {
-        sqlHelper.execute(conn, "INSERT INTO section (resume_uuid, type, content) VALUES (?,?,?)", ps -> {
+        sqlHelper.execute(conn, "INSERT INTO section (resume_uuid, type, value) VALUES (?,?,?)", ps -> {
             String uuid = r.getUuid();
             for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
                 ps.setString(1, uuid);
@@ -209,10 +208,10 @@ public class SqlStorage implements Storage {
 
     private void addSection(Resume dst, ResultSet src) throws SQLException {
         String type = src.getString("type");
-        String content = src.getString("content");
-        if (Objects.isNull(type) || Objects.isNull(content)) return;
+        String value = src.getString("value");
+        if (Objects.isNull(type) || Objects.isNull(value)) return;
         SectionType sectionType = SectionType.valueOf(type);
-        dst.addSection(sectionType, mapToSection(sectionType, content));
+        dst.addSection(sectionType, mapToSection(sectionType, value));
     }
 
     private String mapToString(SectionType sectionType, Section section) {
