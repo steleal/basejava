@@ -242,7 +242,8 @@ public class SqlStorage implements Storage {
             case ACHIEVEMENT:
             case QUALIFICATIONS:
                 // ListSection
-                return new ListSection(value.split("\n"));
+                String[] items = "".equals(value) ? new String[0] : value.split("\n");
+                return new ListSection(items);
             case EXPERIENCE:
             case EDUCATION:
                 // OrganizationSection
