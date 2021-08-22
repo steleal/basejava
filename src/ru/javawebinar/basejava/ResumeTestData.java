@@ -8,8 +8,6 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.TextSection;
 import ru.javawebinar.basejava.util.DateUtil;
 
-import java.time.LocalDate;
-
 import static ru.javawebinar.basejava.model.ContactType.GITHUB;
 import static ru.javawebinar.basejava.model.ContactType.HOME_PAGE;
 import static ru.javawebinar.basejava.model.ContactType.LINKEDIN;
@@ -34,7 +32,7 @@ public class ResumeTestData {
         addContactsTo(resume);
         addTextSectionsTo(resume);
         addListSectionsTo(resume);
-//        addOrganizationSectionsTo(resume);
+        addOrganizationSectionsTo(resume);
         return resume;
     }
 
@@ -106,7 +104,7 @@ public class ResumeTestData {
         Organization javaOnlineProjects = new Organization("Java Online Projects", "http://javaops.ru/",
                 new Position(
                         DateUtil.of(2012, 10),
-                        LocalDate.now(),
+                        DateUtil.NOW,
                         "Автор проекта.",
                         "Создание, организация и проведение Java онлайн проектов и стажировок."));
         Organization wrike = new Organization("Wrike", "https://www.wrike.com/",

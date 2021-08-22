@@ -2,12 +2,11 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.ListSection;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.Section;
 import ru.javawebinar.basejava.model.SectionType;
-import ru.javawebinar.basejava.model.TextSection;
 import ru.javawebinar.basejava.sql.SqlHelper;
+import ru.javawebinar.basejava.util.JsonParser;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -196,9 +195,11 @@ public class SqlStorage implements Storage {
         sqlHelper.executeInConn(conn, "INSERT INTO section (resume_uuid, type, value) VALUES (?,?,?)", ps -> {
             String uuid = r.getUuid();
             for (Map.Entry<SectionType, Section> e : r.getSections().entrySet()) {
+                if (e.getValue() == null) continue;
                 ps.setString(1, uuid);
                 ps.setString(2, e.getKey().name());
-                ps.setString(3, mapToString(e.getKey(), e.getValue()));
+                Section section = e.getValue();
+                ps.setString(3, JsonParser.write(section, Section.class));
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -211,45 +212,7 @@ public class SqlStorage implements Storage {
         String value = src.getString("value");
         if (Objects.isNull(type) || Objects.isNull(value)) return;
         SectionType sectionType = SectionType.valueOf(type);
-        dst.addSection(sectionType, mapToSection(sectionType, value));
+        dst.addSection(sectionType, JsonParser.read(value, Section.class));
     }
 
-    private String mapToString(SectionType sectionType, Section section) {
-        switch (sectionType) {
-            case PERSONAL:
-            case OBJECTIVE:
-                // TextSection
-                return ((TextSection) section).getContent();
-            case ACHIEVEMENT:
-            case QUALIFICATIONS:
-                // ListSection
-                return String.join("\n", ((ListSection) section).getItems());
-            case EXPERIENCE:
-            case EDUCATION:
-                // OrganizationSection
-                return null;
-            default:
-                throw new UnsupportedOperationException("Unsupported section type " + sectionType.name());
-        }
-    }
-
-    private Section mapToSection(SectionType sectionType, String value) {
-        switch (sectionType) {
-            case PERSONAL:
-            case OBJECTIVE:
-                // TextSection
-                return new TextSection(value);
-            case ACHIEVEMENT:
-            case QUALIFICATIONS:
-                // ListSection
-                String[] items = "".equals(value) ? new String[0] : value.split("\n");
-                return new ListSection(items);
-            case EXPERIENCE:
-            case EDUCATION:
-                // OrganizationSection
-                return null;
-            default:
-                throw new UnsupportedOperationException("Unsupported section type " + sectionType.name());
-        }
-    }
 }

@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +11,7 @@ public class ListSection extends Section {
     private List<String> items;
 
     public ListSection() {
+        this(new ArrayList<>());
     }
 
     public ListSection(String... items) {
@@ -36,7 +38,7 @@ public class ListSection extends Section {
 
     @Override
     public String toString() {
-        return items.toString();
+        return String.join("\n", items);
     }
 
     public List<String> getItems() {

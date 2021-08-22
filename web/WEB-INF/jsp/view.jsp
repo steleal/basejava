@@ -18,9 +18,15 @@
                          type="java.util.Map.Entry<ru.javawebinar.basejava.model.ContactType, java.lang.String>"/>
                 <%=HtmlUtil.toHtml(contactEntry.getKey(), contactEntry.getValue())%><br/>
         </c:forEach>
+    </p>
     <p>
+        <c:forEach var="sectionEntry" items="${resume.sections}">
+            <jsp:useBean id="sectionEntry"
+                         type="java.util.Map.Entry<ru.javawebinar.basejava.model.SectionType, ru.javawebinar.basejava.model.Section>"/>
+                <%=HtmlUtil.toHtml(sectionEntry.getKey(), sectionEntry.getValue())%>
+        </c:forEach>
+    </p>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>
-
