@@ -3,6 +3,8 @@ package ru.javawebinar.basejava.web;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.ListSection;
+import ru.javawebinar.basejava.model.Organization;
+import ru.javawebinar.basejava.model.OrganizationSection;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.Section;
 import ru.javawebinar.basejava.model.SectionType;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ResumeServlet extends HttpServlet {
@@ -56,13 +59,10 @@ public class ResumeServlet extends HttpServlet {
             }
         }
         for (SectionType type : SectionType.values()) {
-            String value = request.getParameter(type.name());
-            Section section = mapToSection(type, value);
+            Section section = mapToSection(type, request);
             if (section != null) {
                 r.addSection(type, section);
             } else {
-                // т.к. пока не реализовал передачу орг секций из edit в сервлет,
-                // то при обновлении резюме они удаляются :-(
                 r.getSections().remove(type);
             }
         }
@@ -99,12 +99,14 @@ public class ResumeServlet extends HttpServlet {
                 return;
             case "add":
                 r = new Resume("");
+                replaceNullSectionsWithEmpty(r);
                 request.setAttribute("resume", r);
                 request.setAttribute("isNew", true);
                 request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
                 return;
             case "edit":
                 r = storage.get(uuid);
+                replaceNullSectionsWithEmpty(r);
                 request.setAttribute("resume", r);
                 request.setAttribute("isNew", false);
                 request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
@@ -115,29 +117,62 @@ public class ResumeServlet extends HttpServlet {
 
     }
 
-    private Section mapToSection(SectionType type, String value) {
+    private Section mapToSection(SectionType type, HttpServletRequest request) {
+        String value = request.getParameter(type.name());
         if (value == null || value.isEmpty()) return null;
 
         switch (type) {
             case PERSONAL:
             case OBJECTIVE:
                 // TextSection
-                return new TextSection(value);
+                value = value.trim();
+                return value.isEmpty() ? null : new TextSection(value);
             case ACHIEVEMENT:
             case QUALIFICATIONS:
                 // ListSection
-                return value.isEmpty()
-                        ? new ListSection()
-                        : new ListSection(
-                        Arrays.stream(value.split("\\r?\\n"))
-                                .filter(r -> !r.isEmpty())
-                                .collect(Collectors.toList()));
+                List<String> items = Arrays.stream(value.split("\\r?\\n"))
+                        .filter(r -> !r.isEmpty())
+                        .collect(Collectors.toList());
+                return items.size() == 0 ? null : new ListSection(items);
             case EXPERIENCE:
             case EDUCATION:
                 // OrganizationSection
                 return null;
             default:
                 throw new UnsupportedOperationException("Unsupported section type " + type.name());
+        }
+    }
+
+    private void replaceNullSectionsWithEmpty(Resume r) {
+        for (SectionType type : SectionType.values()) {
+            Section section = r.getSection(type);
+            switch (type) {
+                case OBJECTIVE:
+                case PERSONAL:
+                    if (section == null) {
+                        section = new TextSection();
+                    }
+                    break;
+                case ACHIEVEMENT:
+                case QUALIFICATIONS:
+                    if (section == null) {
+                        section = new ListSection();
+                    }
+                    break;
+                case EXPERIENCE:
+                case EDUCATION:
+                    if (section == null) {
+                        section = new OrganizationSection();
+                    }
+                    List<Organization> organizations = ((OrganizationSection) section).getOrganizations();
+                    organizations.add(new Organization());
+                    for (Organization org : organizations) {
+                        List<Organization.Position> positions = org.getPositions();
+                        positions.add(new Organization.Position());
+                    }
+                    break;
+            }
+            r.addSection(type, section);
         }
     }
 

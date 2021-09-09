@@ -8,6 +8,7 @@ public class TextSection extends Section {
     private String content;
 
     public TextSection() {
+        this("");
     }
 
     public TextSection(String content) {

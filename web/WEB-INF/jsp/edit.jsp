@@ -34,9 +34,10 @@
             <%--    ВНИМАНИЕ, ГРАБЛИ!!!!
                 useBean бросит Exception javax.servlet.ServletException: bean [name] not found within scope,
                 если value == null !!!!
+                Некуда бежать, придется подменять null на пустые секции, при вызове, т.е. в сервлете.
             --%>
-            <%--  <jsp:useBean id="section" type="ru.javawebinar.basejava.model.Section"/> --%>
-            <c:set var="editValue" value="${section!=null ? section.toString() : ''}"/>
+            <jsp:useBean id="section" type="ru.javawebinar.basejava.model.Section"/>
+            <c:set var="editValue" value="${ section.toString() }"/>
             <jsp:useBean id="editValue" type="java.lang.String"/>
             <dl>
                 <h3>${type.title}</h3>

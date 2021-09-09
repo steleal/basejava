@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +12,7 @@ public class OrganizationSection extends Section {
     private List<Organization> organizations;
 
     public OrganizationSection() {
+        this(new ArrayList<>());
     }
 
     public OrganizationSection(Organization... organizations) {
