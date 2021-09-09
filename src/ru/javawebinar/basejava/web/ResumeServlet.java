@@ -86,25 +86,27 @@ public class ResumeServlet extends HttpServlet {
             return;
         }
 
+        Resume r;
         switch (action) {
             case "delete":
                 if (uuid != null) storage.delete(uuid);
                 response.sendRedirect("resume");
                 return;
             case "view":
-                if (uuid != null) {
-                    request.setAttribute("resume", storage.get(uuid));
-                    request.getRequestDispatcher("/WEB-INF/jsp/view.jsp").forward(request, response);
-                } else {
-                    response.sendRedirect("resume");
-                }
+                r = storage.get(uuid);
+                request.setAttribute("resume", r);
+                request.getRequestDispatcher("/WEB-INF/jsp/view.jsp").forward(request, response);
+                return;
+            case "add":
+                r = new Resume("");
+                request.setAttribute("resume", r);
+                request.setAttribute("isNew", true);
+                request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
                 return;
             case "edit":
-                boolean isNew = uuid == null;
-                Resume r = isNew ? new Resume("") : storage.get(uuid);
-
+                r = storage.get(uuid);
                 request.setAttribute("resume", r);
-                request.setAttribute("isNew", isNew);
+                request.setAttribute("isNew", false);
                 request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
                 return;
             default:
