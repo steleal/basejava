@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ResumeServlet extends HttpServlet {
     private Storage storage;
@@ -122,7 +124,12 @@ public class ResumeServlet extends HttpServlet {
             case ACHIEVEMENT:
             case QUALIFICATIONS:
                 // ListSection
-                return value.isEmpty() ? new ListSection() : new ListSection(value.split("\n"));
+                return value.isEmpty()
+                        ? new ListSection()
+                        : new ListSection(
+                        Arrays.stream(value.split("\\r?\\n"))
+                                .filter(r -> !r.isEmpty())
+                                .collect(Collectors.toList()));
             case EXPERIENCE:
             case EDUCATION:
                 // OrganizationSection
