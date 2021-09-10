@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import static ru.javawebinar.basejava.util.DateUtil.NOW;
 
 public class HtmlUtil {
-    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("MM/YYYY");
+
 
     public static String toHtml(ContactType type, String value) {
         if (type == null || value == null) return "";
@@ -64,11 +64,7 @@ public class HtmlUtil {
                     builder.append("<h3>").append(toHtml(org.getHomePage())).append("</h3>");
                     org.getPositions().forEach(pos -> {
                         LocalDate end = pos.getEndDate();
-                        builder.append(
-                                toTag("p",
-                                        DTF.format(pos.getStartDate())
-                                                + " - "
-                                                + (end.equals(NOW) ? "сейчас" : DTF.format(end))))
+                        builder.append(toTag("p", DateUtil.format(pos.getStartDate()) + " - " + DateUtil.format(end)))
                                 .append(toTag("h4", pos.getTitle()))
                                 .append(toTag("p", pos.getDescription()));
                     });

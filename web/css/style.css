@@ -69,3 +69,39 @@ a[href*="github."] {
     padding-left: 20px !important;
     background: url(../img/gh.png) no-repeat center left;
 }
+
+.org > dl {
+    display: inline-block;
+    padding-right: 40px;
+}
+
+.org dt {
+    width: 110px;
+}
+
+.date {
+    float: left;
+    width: 300px;
+    margin-right: 40px;
+}
+.date  dt {
+    width: 110px;
+}
+
+.pos {
+    float: left;
+    width: 550px;
+}
+
+.pos  dt {
+    width: 110px;
+}
+
+
+.pos dd {
+    width: 390px;
+}
+
+.pos textarea {
+    width: 390px;
+}

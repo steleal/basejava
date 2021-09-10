@@ -11,4 +11,8 @@ public class StringUtil {
         start += left.length();
         return string.substring(start, end);
     }
+
+    public static boolean isNullOrEmpty(String value) {
+        return value == null || value.trim().length() == 0;
+    }
 }

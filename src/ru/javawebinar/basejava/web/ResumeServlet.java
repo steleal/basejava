@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.ContactType;
+import ru.javawebinar.basejava.model.Link;
 import ru.javawebinar.basejava.model.ListSection;
 import ru.javawebinar.basejava.model.Organization;
 import ru.javawebinar.basejava.model.OrganizationSection;
@@ -10,6 +11,7 @@ import ru.javawebinar.basejava.model.Section;
 import ru.javawebinar.basejava.model.SectionType;
 import ru.javawebinar.basejava.model.TextSection;
 import ru.javawebinar.basejava.storage.Storage;
+import ru.javawebinar.basejava.util.DateUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,9 +19,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.javawebinar.basejava.util.StringUtil.isNullOrEmpty;
 
 public class ResumeServlet extends HttpServlet {
     private Storage storage;
@@ -119,13 +124,13 @@ public class ResumeServlet extends HttpServlet {
 
     private Section mapToSection(SectionType type, HttpServletRequest request) {
         String value = request.getParameter(type.name());
-        if (value == null || value.isEmpty()) return null;
+        if (isNullOrEmpty(value)) return null;
 
+        value = value.trim();
         switch (type) {
             case PERSONAL:
             case OBJECTIVE:
                 // TextSection
-                value = value.trim();
                 return value.isEmpty() ? null : new TextSection(value);
             case ACHIEVEMENT:
             case QUALIFICATIONS:
@@ -137,7 +142,28 @@ public class ResumeServlet extends HttpServlet {
             case EXPERIENCE:
             case EDUCATION:
                 // OrganizationSection
-                return null;
+                List<Organization> organizations = new ArrayList<>();
+                String[] urls = request.getParameterValues(type.name() + ".url");
+                String[] names = request.getParameterValues(type.name() + ".name");
+                for (int i = 0; i < names.length; i++) {
+                    String name = names[i];
+                    if (!isNullOrEmpty(name)) {
+                        List<Organization.Position> positions = new ArrayList<>();
+                        String pfx = type.name() + i;
+                        String[] startDates = request.getParameterValues(pfx + ".startDate");
+                        String[] endDates = request.getParameterValues(pfx + ".endDate");
+                        String[] titles = request.getParameterValues(pfx + ".title");
+                        String[] descriptions = request.getParameterValues(pfx + ".description");
+                        for (int j = 0; j < titles.length; j++) {
+                            if (!isNullOrEmpty(titles[j])) {
+                                positions.add(new Organization.Position(DateUtil.parse(startDates[j]), DateUtil.parse(endDates[j]), titles[j], descriptions[j]));
+                            }
+                        }
+                        organizations.add(new Organization(new Link(name, urls[i]), positions));
+                    }
+                }
+
+                return new OrganizationSection(organizations);
             default:
                 throw new UnsupportedOperationException("Unsupported section type " + type.name());
         }

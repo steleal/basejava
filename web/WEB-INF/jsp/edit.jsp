@@ -1,5 +1,7 @@
 <%@ page import="ru.javawebinar.basejava.model.ContactType" %>
 <%@ page import="ru.javawebinar.basejava.model.SectionType" %>
+<%@ page import="ru.javawebinar.basejava.model.OrganizationSection" %>
+<%@ page import="ru.javawebinar.basejava.util.DateUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -41,7 +43,7 @@
             <jsp:useBean id="editValue" type="java.lang.String"/>
             <dl>
                 <h3>${type.title}</h3>
-                <dd>
+                <dd  class="org">
                     <c:choose>
                         <c:when test="${type=='OBJECTIVE'}">
                             <input type='text' name='${type}' value='<%=editValue%>' size=60>
@@ -53,7 +55,50 @@
                             <textarea name='${type}' cols=60 rows=10><%=editValue%></textarea>
                         </c:when>
                         <c:when test="${type=='EXPERIENCE' || type=='EDUCATION'}">
-                            <textarea name='${type}' cols=60 rows=10><%=editValue%></textarea>
+                            <input type="hidden" name='${type}' value="1">
+                            <c:forEach var="organization" items="<%=((OrganizationSection) section).getOrganizations()%>"
+                                       varStatus="counter">
+                                <dl>
+                                    <dt>Название:</dt>
+                                    <dd><input type="text" name='${type}.name' value="${organization.homePage.name}"></dd>
+                                </dl>
+                                <dl>
+                                    <dt>Сайт:</dt>
+                                    <dd><input type="text" name='${type}.url' value="${organization.homePage.url}"></dd>
+                                    </dd>
+                                </dl>
+                                <c:forEach var="position" items="${organization.positions}">
+                                    <jsp:useBean id="position" type="ru.javawebinar.basejava.model.Organization.Position"/>
+                                    <div class="date">
+                                    <dl>
+                                        <dt>Начальная дата:</dt>
+                                        <dd>
+                                            <input type="text" name="${type}${counter.index}.startDate"
+                                                   value="<%=DateUtil.format(position.getStartDate())%>" >
+                                        </dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>Конечная дата:</dt>
+                                        <dd>
+                                            <input type="text" name="${type}${counter.index}.endDate"
+                                                   value="<%=DateUtil.format(position.getEndDate())%>" >
+                                    </dl>
+                                    </div>
+                                    <div class = "pos">
+                                    <dl>
+                                        <dt>Должность:</dt>
+                                        <dd><input type="text" name='${type}${counter.index}.title'
+                                                   value="${position.title}">
+                                    </dl>
+                                    <dl>
+                                        <dt>Описание:</dt>
+                                        <dd><textarea name="${type}${counter.index}.description" rows=10
+                                                      >${position.description}</textarea></dd>
+                                    </dl>
+                                    </div>
+                                </c:forEach>
+                            </c:forEach>
+
                         </c:when>
                     </c:choose>
                 </dd>
